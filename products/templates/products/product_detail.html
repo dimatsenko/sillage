@@ -1,0 +1,130 @@
+{% extends "products/base.html" %}
+
+{% block title %}{{ product.brand }} — {{ product.name }} | Sillage{% endblock %}
+{% block meta_description %}{{ product.brand }} {{ product.name }} — {{ product.volume }} мл, {{ product.price }} грн. Купуйте в Sillage!{% endblock %}
+
+{% block extra_css %}
+<style>
+    .breadcrumb {
+        font-size: .85rem;
+        color: var(--clr-text-muted);
+        margin-bottom: 1.5rem;
+    }
+    .breadcrumb a { color: var(--clr-primary); }
+
+    .detail-card {
+        background: var(--clr-surface);
+        border: 1px solid var(--clr-border);
+        border-radius: var(--radius);
+        padding: 2rem 2.5rem;
+        max-width: 720px;
+    }
+
+    .detail-card .brand-label {
+        font-size: .8rem;
+        text-transform: uppercase;
+        letter-spacing: .08em;
+        color: var(--clr-accent);
+        margin-bottom: .25rem;
+    }
+
+    .detail-card h1 {
+        font-size: 1.75rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+    }
+
+    .detail-card .specs {
+        display: grid;
+        grid-template-columns: auto 1fr;
+        gap: .5rem 1.5rem;
+        margin-bottom: 1.5rem;
+        font-size: .95rem;
+    }
+
+    .detail-card .specs dt {
+        color: var(--clr-text-muted);
+        font-weight: 500;
+    }
+
+    .detail-card .specs dd {
+        color: var(--clr-text);
+    }
+
+    .detail-card .price-tag {
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: var(--clr-primary);
+        margin-bottom: 1.5rem;
+    }
+
+    .detail-card .description {
+        color: var(--clr-text-muted);
+        line-height: 1.7;
+        white-space: pre-line;
+    }
+
+    .detail-card .timestamps {
+        margin-top: 1.5rem;
+        padding-top: 1rem;
+        border-top: 1px solid var(--clr-border);
+        font-size: .8rem;
+        color: var(--clr-text-muted);
+    }
+
+    .back-link {
+        display: inline-block;
+        margin-top: 1.5rem;
+        padding: .5rem 1.25rem;
+        border: 1px solid var(--clr-border);
+        border-radius: 8px;
+        color: var(--clr-text-muted);
+        transition: all var(--transition);
+    }
+    .back-link:hover {
+        border-color: var(--clr-primary);
+        color: var(--clr-text);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<nav class="breadcrumb" aria-label="Навігація">
+    <a href="{% url 'products:list' %}">Каталог</a> &rsaquo;
+    <a href="{% url 'products:list' %}?category={{ product.category.slug }}">{{ product.category.name }}</a> &rsaquo;
+    <span>{{ product.name }}</span>
+</nav>
+
+<article class="detail-card" id="product-detail">
+    <p class="brand-label">{{ product.brand }}</p>
+    <h1>{{ product.name }}</h1>
+
+    <dl class="specs">
+        <dt>Категорія</dt>
+        <dd>{{ product.category.name }}</dd>
+
+        <dt>Бренд</dt>
+        <dd>{{ product.brand }}</dd>
+
+        <dt>Об'єм</dt>
+        <dd>{{ product.volume }}&nbsp;мл</dd>
+    </dl>
+
+    <p class="price-tag" id="product-price">{{ product.price }}&nbsp;грн</p>
+
+    {% if product.description %}
+    <div class="description" id="product-description">
+        {{ product.description }}
+    </div>
+    {% endif %}
+
+    <div class="timestamps">
+        Додано: {{ product.created_at|date:"d.m.Y H:i" }} ·
+        Оновлено: {{ product.updated_at|date:"d.m.Y H:i" }}
+    </div>
+</article>
+
+<a href="{% url 'products:list' %}" class="back-link" id="btn-back">
+    &larr; Повернутися до каталогу
+</a>
+{% endblock %}

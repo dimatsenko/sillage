@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="uk">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Sillage — Парфумерний декант-магазин{% endblock %}</title>
+    <meta name="description"
+        content="{% block meta_description %}Sillage — інтернет-магазин парфумерних деканів. Найкращі аромати за доступними цінами.{% endblock %}">
+    <style>
+        *,
+        *::before,
+        *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --clr-bg: #0f0f14;
+            --clr-surface: #1a1a24;
+            --clr-surface-hover: #24243a;
+            --clr-border: #2a2a40;
+            --clr-primary: #a78bfa;
+            --clr-primary-dim: #7c5cbf;
+            --clr-accent: #f0abfc;
+            --clr-text: #e8e6f0;
+            --clr-text-muted: #9490a8;
+            --clr-danger: #f87171;
+            --radius: 12px;
+            --shadow: 0 4px 24px rgba(0, 0, 0, .4);
+            --font: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            --transition: .22s ease;
+        }
+
+        body {
+            font-family: var(--font);
+            background: var(--clr-bg);
+            color: var(--clr-text);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        a {
+            color: var(--clr-primary);
+            text-decoration: none;
+            transition: color var(--transition);
+        }
+
+        a:hover {
+            color: var(--clr-accent);
+        }
+
+        /* ── Header ─────────────────────────────── */
+        .site-header {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            border-bottom: 1px solid var(--clr-border);
+            padding: 1rem 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(12px);
+        }
+
+        .site-header .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--clr-primary), var(--clr-accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: .04em;
+        }
+
+        .site-header nav a {
+            margin-left: 1.5rem;
+            font-size: .95rem;
+            color: var(--clr-text-muted);
+        }
+
+        .site-header nav a:hover {
+            color: var(--clr-text);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem 1.5rem;
+        }
+
+        .msg-info {
+            background: var(--clr-surface);
+            border: 1px solid var(--clr-border);
+            border-radius: var(--radius);
+            padding: 1rem 1.5rem;
+            margin-bottom: 1.5rem;
+            color: var(--clr-text-muted);
+            text-align: center;
+        }
+
+        .site-footer {
+            text-align: center;
+            padding: 2rem 1rem;
+            color: var(--clr-text-muted);
+            font-size: .85rem;
+            border-top: 1px solid var(--clr-border);
+            margin-top: 3rem;
+        }
+    </style>
+    {% block extra_css %}{% endblock %}
+</head>
+
+<body>
+    <header class="site-header">
+        <a href="{% url 'products:list' %}" class="logo">Sillage</a>
+        <nav>
+            <a href="{% url 'products:list' %}">Каталог</a>
+        </nav>
+    </header>
+
+    <main class="container">
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="site-footer">
+        &copy; 2026 Sillage — Парфумерний декант-магазин
+    </footer>
+
+    {% block extra_js %}{% endblock %}
+</body>
+
+</html>
