@@ -1,7 +1,8 @@
 {% extends "products/base.html" %}
 
 {% block title %}{{ product.brand }} — {{ product.name }} | Sillage{% endblock %}
-{% block meta_description %}{{ product.brand }} {{ product.name }} — {{ product.volume }} мл, {{ product.price }} грн. Купуйте в Sillage!{% endblock %}
+{% block meta_description %}{{ product.brand }} {{ product.name }} — {{ product.volume }} мл, {{ product.price }} грн.
+Купуйте в Sillage!{% endblock %}
 
 {% block extra_css %}
 <style>
@@ -10,7 +11,10 @@
         color: var(--clr-text-muted);
         margin-bottom: 1.5rem;
     }
-    .breadcrumb a { color: var(--clr-primary); }
+
+    .breadcrumb a {
+        color: var(--clr-primary);
+    }
 
     .detail-card {
         background: var(--clr-surface);
@@ -81,6 +85,7 @@
         color: var(--clr-text-muted);
         transition: all var(--transition);
     }
+
     .back-link:hover {
         border-color: var(--clr-primary);
         color: var(--clr-text);
