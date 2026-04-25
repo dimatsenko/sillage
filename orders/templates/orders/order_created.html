@@ -1,0 +1,88 @@
+{% extends "products/base.html" %}
+
+{% block title %}Замовлення успішно оформлене{% endblock %}
+
+{% block extra_css %}
+<style>
+    .order-success-container {
+        max-width: 650px;
+        margin: 4rem auto;
+        padding: 4rem 3rem;
+        background-color: var(--clr-surface, #ffffff);
+        border-radius: var(--radius, 12px);
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05), 0 2px 4px rgba(0, 0, 0, 0.04);
+        text-align: center;
+    }
+
+    .success-icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 80px;
+        height: 80px;
+        background-color: #f0fdf4;
+        color: #22c55e;
+        border-radius: 50%;
+        font-size: 2.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .order-success-container h1 {
+        font-size: 2rem;
+        color: var(--clr-text, #333);
+        margin-bottom: 1rem;
+        font-weight: 700;
+    }
+
+    .order-success-message {
+        color: #666;
+        font-size: 1.1rem;
+        margin-bottom: 2rem;
+    }
+
+    .order-number {
+        font-size: 1.25rem;
+        background-color: #fafafa;
+        padding: 1.25rem;
+        border-radius: var(--radius, 8px);
+        margin: 0 auto 2.5rem;
+        border-left: 4px solid var(--clr-primary, #000);
+        display: inline-block;
+        min-width: 70%;
+    }
+
+    .btn-return {
+        display: inline-block;
+        background-color: var(--clr-primary, #000);
+        color: #fff;
+        padding: 1rem 2.5rem;
+        border-radius: var(--radius, 30px);
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 1.1rem;
+        transition: transform 0.2s ease, opacity 0.3s ease;
+    }
+
+    .btn-return:hover {
+        opacity: 0.9;
+        transform: translateY(-2px);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="order-success-container">
+    <div class="success-icon">✓</div>
+    
+    <h1>Дякуємо! Ваше замовлення успішно оформлене</h1>
+    <p class="order-success-message">Ми вже обробляємо ваше замовлення і невдовзі зв'яжемося з вами.</p>
+    
+    <div class="order-number">
+        Ваш номер замовлення: <strong>{{ order.id }}</strong>
+    </div>
+    
+    <div>
+        <a href="{% url 'products:list' %}" class="btn-return">Повернутися до каталогу</a>
+    </div>
+</div>
+{% endblock %}
