@@ -4,7 +4,8 @@ from django.views.decorators.http import require_POST
 
 from products.models import Product
 from .cart import Cart
-from .forms import CartAddProductForm
+from .forms import CartAddProductForm, OrderCreateForm
+from .models import OrderItem
 
 
 @require_POST
@@ -67,3 +68,37 @@ def cart_detail(request: HttpRequest) -> HttpResponse:
         )
         
     return render(request, 'orders/cart_detail.html', {'cart': cart})
+
+
+def order_create(request: HttpRequest) -> HttpResponse:
+    """
+    Обробляє оформлення замовлення:
+    - Якщо GET: відображає пусту форму.
+    - Якщо POST: валідує дані, створює замовлення, переносить
+      товари з кошика в OrderItem та очищує кошик.
+
+    :param request: Об'єкт HttpRequest.
+    :return: HttpResponse: Відрендерений шаблон.
+    """
+    cart = Cart(request)
+    
+    if request.method == 'POST':
+        form = OrderCreateForm(request.POST)
+        if form.is_valid():
+            order = form.save()
+            
+            for item in cart:
+                OrderItem.objects.create(
+                    order=order,
+                    product=item['product'],
+                    price=item['price'],
+                    quantity=item['quantity']
+                )
+                
+            # Очищуємо кошик після успішного збереження товарів
+            cart.clear()
+            return render(request, 'orders/order_created.html', {'order': order})
+    else:
+        form = OrderCreateForm()
+        
+    return render(request, 'orders/order_create.html', {'cart': cart, 'form': form})
