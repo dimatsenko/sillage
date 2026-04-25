@@ -13,6 +13,11 @@
     }
 
     .breadcrumb a {
+        color: var(--clr-accent);
+        font-weight: 500;
+    }
+
+    .breadcrumb a:hover {
         color: var(--clr-primary);
     }
 
@@ -22,13 +27,15 @@
         border-radius: var(--radius);
         padding: 2rem 2.5rem;
         max-width: 720px;
+        box-shadow: var(--shadow);
     }
 
     .detail-card .brand-label {
-        font-size: .8rem;
+        font-size: .75rem;
         text-transform: uppercase;
         letter-spacing: .08em;
         color: var(--clr-accent);
+        font-weight: 500;
         margin-bottom: .25rem;
     }
 
@@ -80,15 +87,16 @@
         display: inline-block;
         margin-top: 1.5rem;
         padding: .5rem 1.25rem;
-        border: 1px solid var(--clr-border);
-        border-radius: 8px;
-        color: var(--clr-text-muted);
+        border: 1px solid var(--clr-primary);
+        border-radius: var(--radius);
+        color: var(--clr-primary);
+        font-weight: 500;
         transition: all var(--transition);
     }
 
     .back-link:hover {
-        border-color: var(--clr-primary);
-        color: var(--clr-text);
+        background: var(--clr-primary);
+        color: var(--clr-bg);
     }
 </style>
 {% endblock %}

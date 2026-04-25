@@ -6,79 +6,191 @@
 
 {% block extra_css %}
 <style>
-    /* ── Filter bar ─────────────────────────── */
-    .filter-bar {
+    /* ── Toolbar (search + filter toggle) ──── */
+    .catalog-toolbar {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .catalog-search {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        gap: .5rem;
+        background: var(--clr-surface);
+        border: 1px solid var(--clr-border);
+        border-radius: var(--radius);
+        padding: .55rem 1rem;
+        transition: border-color var(--transition);
+    }
+
+    .catalog-search:focus-within {
+        border-color: var(--clr-primary);
+    }
+
+    .catalog-search svg {
+        width: 18px;
+        height: 18px;
+        stroke: var(--clr-text-muted);
+        stroke-width: 2;
+        fill: none;
+        flex-shrink: 0;
+    }
+
+    .catalog-search input {
+        flex: 1;
+        border: none;
+        background: transparent;
+        font-family: var(--font);
+        font-size: .95rem;
+        color: var(--clr-text);
+        outline: none;
+    }
+
+    .catalog-search input::placeholder {
+        color: var(--clr-text-muted);
+    }
+
+    .filter-toggle {
+        display: flex;
+        align-items: center;
+        gap: .4rem;
+        padding: .6rem 1.25rem;
+        background: transparent;
+        border: 1px solid var(--clr-border);
+        border-radius: var(--radius);
+        cursor: pointer;
+        font-family: var(--font);
+        font-size: .85rem;
+        font-weight: 600;
+        color: var(--clr-text);
+        text-transform: uppercase;
+        letter-spacing: .04em;
+        transition: all var(--transition);
+    }
+
+    .filter-toggle:hover {
+        border-color: var(--clr-primary);
+    }
+
+    .filter-toggle.active {
+        background: var(--clr-primary);
+        color: var(--clr-bg);
+        border-color: var(--clr-primary);
+    }
+
+    .filter-toggle svg {
+        width: 16px;
+        height: 16px;
+        stroke: currentColor;
+        stroke-width: 2;
+        fill: none;
+    }
+
+    .filter-count {
+        font-weight: 400;
+        opacity: .7;
+    }
+
+    /* ── Collapsible filter panel ──────────── */
+    .filter-panel {
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height .35s cubic-bezier(.4, 0, .2, 1),
+                    opacity .25s ease,
+                    margin .35s ease;
+        opacity: 0;
+        margin-bottom: 0;
+    }
+
+    .filter-panel.open {
+        max-height: 300px;
+        opacity: 1;
+        margin-bottom: 1.5rem;
+    }
+
+    .filter-panel__inner {
         background: var(--clr-surface);
         border: 1px solid var(--clr-border);
         border-radius: var(--radius);
         padding: 1.25rem 1.5rem;
-        margin-bottom: 2rem;
         display: flex;
         flex-wrap: wrap;
         gap: .75rem;
         align-items: flex-end;
     }
 
-    .filter-bar .field {
+    .filter-panel__inner .field {
         display: flex;
         flex-direction: column;
         gap: .3rem;
         flex: 1 1 160px;
     }
 
-    .filter-bar label {
-        font-size: .78rem;
+    .filter-panel__inner label {
+        font-size: .75rem;
         color: var(--clr-text-muted);
         text-transform: uppercase;
         letter-spacing: .06em;
+        font-weight: 500;
     }
 
-    .filter-bar input,
-    .filter-bar select {
+    .filter-panel__inner input,
+    .filter-panel__inner select {
         padding: .55rem .75rem;
         border: 1px solid var(--clr-border);
-        border-radius: 8px;
+        border-radius: var(--radius);
         background: var(--clr-bg);
         color: var(--clr-text);
+        font-family: var(--font);
         font-size: .9rem;
         outline: none;
         transition: border-color var(--transition);
     }
 
-    .filter-bar input:focus,
-    .filter-bar select:focus {
+    .filter-panel__inner input:focus,
+    .filter-panel__inner select:focus {
         border-color: var(--clr-primary);
     }
 
-    .filter-bar .btn {
-        padding: .55rem 1.5rem;
-        background: linear-gradient(135deg, var(--clr-primary-dim), var(--clr-primary));
-        color: #fff;
-        border: none;
-        border-radius: 8px;
-        cursor: pointer;
-        font-size: .9rem;
-        font-weight: 600;
-        transition: opacity var(--transition), transform var(--transition);
+    .filter-actions {
+        display: flex;
+        gap: .5rem;
         align-self: flex-end;
     }
 
-    .filter-bar .btn:hover {
-        opacity: .88;
-        transform: translateY(-1px);
+    .filter-actions .btn {
+        padding: .55rem 1.25rem;
+        background: var(--clr-primary);
+        color: var(--clr-bg);
+        border: none;
+        border-radius: var(--radius);
+        cursor: pointer;
+        font-family: var(--font);
+        font-size: .85rem;
+        font-weight: 600;
+        transition: background var(--transition);
     }
 
-    .filter-bar .btn-reset {
+    .filter-actions .btn:hover {
+        background: var(--clr-primary-dim);
+    }
+
+    .filter-actions .btn-reset {
         background: transparent;
-        border: 1px solid var(--clr-border);
-        color: var(--clr-text-muted);
+        border: 1px solid var(--clr-primary);
+        color: var(--clr-primary);
     }
 
-    .filter-bar .btn-reset:hover {
+    .filter-actions .btn-reset:hover {
         border-color: var(--clr-danger);
         color: var(--clr-danger);
+        background: transparent;
     }
 
+    /* ── Product grid ─────────────────────── */
     .product-grid {
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
@@ -90,22 +202,22 @@
         border: 1px solid var(--clr-border);
         border-radius: var(--radius);
         padding: 1.5rem;
-        transition: transform var(--transition), box-shadow var(--transition), border-color var(--transition);
+        transition: transform var(--transition), box-shadow var(--transition);
         display: flex;
         flex-direction: column;
     }
 
     .product-card:hover {
         transform: translateY(-4px);
-        box-shadow: var(--shadow);
-        border-color: var(--clr-primary-dim);
+        box-shadow: var(--shadow-hover);
     }
 
     .product-card .brand {
-        font-size: .78rem;
+        font-size: .75rem;
         color: var(--clr-accent);
         text-transform: uppercase;
         letter-spacing: .08em;
+        font-weight: 500;
         margin-bottom: .25rem;
     }
 
@@ -120,7 +232,7 @@
     }
 
     .product-card .name a:hover {
-        color: var(--clr-primary);
+        color: var(--clr-accent);
     }
 
     .product-card .meta {
@@ -148,7 +260,7 @@
     .pagination span {
         display: inline-block;
         padding: .5rem 1rem;
-        border-radius: 8px;
+        border-radius: var(--radius);
         font-size: .9rem;
         border: 1px solid var(--clr-border);
         transition: all var(--transition);
@@ -166,7 +278,7 @@
 
     .pagination .current {
         background: var(--clr-primary);
-        color: #fff;
+        color: var(--clr-bg);
         border-color: var(--clr-primary);
         font-weight: 600;
     }
@@ -182,50 +294,65 @@
 {% block content %}
 <h1 style="font-size:1.6rem; margin-bottom:1.25rem;">Каталог парфумерії</h1>
 
-<form method="get" class="filter-bar" id="filter-form">
-    <div class="field">
-        <label for="filter-search">Пошук</label>
-        <input type="text" name="search" id="filter-search" value="{{ current_filters.search }}"
-            placeholder="Назва або бренд…">
+<form method="get" id="filter-form">
+    <!-- Toolbar: search + filter toggle -->
+    <div class="catalog-toolbar">
+        <div class="catalog-search">
+            <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input type="text" name="search" id="filter-search"
+                   value="{{ current_filters.search }}"
+                   placeholder="Знайти аромат…">
+        </div>
+        <button type="button" class="filter-toggle" id="filter-toggle">
+            <svg viewBox="0 0 24 24"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/><circle cx="8" cy="6" r="2"/><circle cx="16" cy="12" r="2"/><circle cx="10" cy="18" r="2"/></svg>
+            Фільтри
+        </button>
     </div>
 
-    <div class="field">
-        <label for="filter-category">Категорія</label>
-        <select name="category" id="filter-category">
-            <option value="">Усі категорії</option>
-            {% for cat in categories %}
-            <option value="{{ cat.slug }}" {% if current_filters.category==cat.slug %}selected{% endif %}>
-                {{ cat.name }}
-            </option>
-            {% endfor %}
-        </select>
-    </div>
+    <!-- Collapsible filter panel -->
+    <div class="filter-panel" id="filter-panel">
+        <div class="filter-panel__inner">
+            <div class="field">
+                <label for="filter-category">Категорія</label>
+                <select name="category" id="filter-category">
+                    <option value="">Усі категорії</option>
+                    {% for cat in categories %}
+                    <option value="{{ cat.slug }}" {% if current_filters.category == cat.slug %}selected{% endif %}>
+                        {{ cat.name }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
 
-    <div class="field">
-        <label for="filter-brand">Бренд</label>
-        <input type="text" name="brand" id="filter-brand" value="{{ current_filters.brand }}"
-            placeholder="Назва бренду…">
-    </div>
+            <div class="field">
+                <label for="filter-brand">Бренд</label>
+                <input type="text" name="brand" id="filter-brand" value="{{ current_filters.brand }}"
+                    placeholder="Назва бренду…">
+            </div>
 
-    <div class="field">
-        <label for="filter-min-price">Ціна від (грн)</label>
-        <input type="number" name="min_price" id="filter-min-price" value="{{ current_filters.min_price }}" min="0"
-            step="0.01">
-    </div>
+            <div class="field">
+                <label for="filter-min-price">Ціна від (грн)</label>
+                <input type="number" name="min_price" id="filter-min-price" value="{{ current_filters.min_price }}"
+                    min="0" step="0.01">
+            </div>
 
-    <div class="field">
-        <label for="filter-max-price">Ціна до (грн)</label>
-        <input type="number" name="max_price" id="filter-max-price" value="{{ current_filters.max_price }}" min="0"
-            step="0.01">
-    </div>
+            <div class="field">
+                <label for="filter-max-price">Ціна до (грн)</label>
+                <input type="number" name="max_price" id="filter-max-price" value="{{ current_filters.max_price }}"
+                    min="0" step="0.01">
+            </div>
 
-    <div class="field">
-        <label for="filter-volume">Об'єм (мл)</label>
-        <input type="number" name="volume" id="filter-volume" value="{{ current_filters.volume }}" min="1">
-    </div>
+            <div class="field">
+                <label for="filter-volume">Об'єм (мл)</label>
+                <input type="number" name="volume" id="filter-volume" value="{{ current_filters.volume }}" min="1">
+            </div>
 
-    <button type="submit" class="btn" id="btn-filter">Фільтрувати</button>
-    <a href="{% url 'products:list' %}" class="btn btn-reset" id="btn-reset">Скинути</a>
+            <div class="filter-actions">
+                <button type="submit" class="btn" id="btn-filter">Застосувати</button>
+                <a href="{% url 'products:list' %}" class="btn btn-reset" id="btn-reset">Скинути</a>
+            </div>
+        </div>
+    </div>
 </form>
 
 {% if products %}
@@ -271,4 +398,32 @@
     На жаль, товарів за вашим запитом не знайдено. Спробуйте змінити параметри пошуку.
 </p>
 {% endif %}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+(function() {
+    const toggle = document.getElementById('filter-toggle');
+    const panel = document.getElementById('filter-panel');
+
+    // Auto-open if any filter is active
+    const hasFilters = panel.querySelector('input[value]:not([value=""]), select option[selected]');
+    if (hasFilters) {
+        panel.classList.add('open');
+        toggle.classList.add('active');
+    }
+
+    toggle.addEventListener('click', function() {
+        panel.classList.toggle('open');
+        toggle.classList.toggle('active');
+    });
+
+    // Submit search on Enter from the search input
+    document.getElementById('filter-search').addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') {
+            document.getElementById('filter-form').submit();
+        }
+    });
+})();
+</script>
 {% endblock %}

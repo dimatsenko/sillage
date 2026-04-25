@@ -7,6 +7,9 @@
     <title>{% block title %}Sillage — Парфумерний декант-магазин{% endblock %}</title>
     <meta name="description"
         content="{% block meta_description %}Sillage — інтернет-магазин парфумерних деканів. Найкращі аромати за доступними цінами.{% endblock %}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         *,
         *::before,
@@ -17,19 +20,20 @@
         }
 
         :root {
-            --clr-bg: #0f0f14;
-            --clr-surface: #1a1a24;
-            --clr-surface-hover: #24243a;
-            --clr-border: #2a2a40;
-            --clr-primary: #a78bfa;
-            --clr-primary-dim: #7c5cbf;
-            --clr-accent: #f0abfc;
-            --clr-text: #e8e6f0;
-            --clr-text-muted: #9490a8;
-            --clr-danger: #f87171;
-            --radius: 12px;
-            --shadow: 0 4px 24px rgba(0, 0, 0, .4);
-            --font: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            --clr-bg: #F3F0E7;
+            --clr-surface: #FDFCF8;
+            --clr-surface-hover: #F7F5EE;
+            --clr-border: #E8E4D7;
+            --clr-primary: #2A2529;
+            --clr-primary-dim: #4A4145;
+            --clr-accent: #6B5E62;
+            --clr-text: #2A2529;
+            --clr-text-muted: #7A7074;
+            --clr-danger: #C0392B;
+            --radius: 8px;
+            --shadow: 0 2px 12px rgba(42, 37, 41, .08);
+            --shadow-hover: 0 8px 24px rgba(42, 37, 41, .12);
+            --font: 'Inter', system-ui, -apple-system, sans-serif;
             --transition: .22s ease;
         }
 
@@ -51,10 +55,9 @@
             color: var(--clr-accent);
         }
 
-        /* ── Header ─────────────────────────────── */
         .site-header {
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-            border-bottom: 1px solid var(--clr-border);
+            background: var(--clr-primary);
+            border-bottom: none;
             padding: 1rem 2rem;
             display: flex;
             align-items: center;
@@ -62,27 +65,25 @@
             position: sticky;
             top: 0;
             z-index: 100;
-            backdrop-filter: blur(12px);
         }
 
         .site-header .logo {
-            font-size: 1.5rem;
+            font-size: 1.4rem;
             font-weight: 700;
-            background: linear-gradient(135deg, var(--clr-primary), var(--clr-accent));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            letter-spacing: .04em;
+            color: var(--clr-bg);
+            letter-spacing: .12em;
+            text-transform: uppercase;
         }
 
         .site-header nav a {
             margin-left: 1.5rem;
-            font-size: .95rem;
-            color: var(--clr-text-muted);
+            font-size: .9rem;
+            font-weight: 500;
+            color: rgba(243, 240, 231, .7);
         }
 
         .site-header nav a:hover {
-            color: var(--clr-text);
+            color: var(--clr-bg);
         }
 
         .container {
@@ -102,12 +103,244 @@
         }
 
         .site-footer {
+            background: var(--clr-primary);
+            color: rgba(243, 240, 231, .6);
             text-align: center;
             padding: 2rem 1rem;
-            color: var(--clr-text-muted);
             font-size: .85rem;
-            border-top: 1px solid var(--clr-border);
+            border-top: none;
             margin-top: 3rem;
+        }
+
+        /* ── Search overlay (Byredo-style) ────── */
+        .search-trigger {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: .25rem;
+            display: flex;
+            align-items: center;
+            gap: .4rem;
+            color: rgba(243, 240, 231, .7);
+            font-family: var(--font);
+            font-size: .9rem;
+            font-weight: 500;
+            transition: color var(--transition);
+        }
+
+        .search-trigger:hover {
+            color: var(--clr-bg);
+        }
+
+        .search-trigger svg {
+            width: 18px;
+            height: 18px;
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        .search-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 200;
+            display: flex;
+            flex-direction: column;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity .3s ease, visibility .3s ease;
+        }
+
+        .search-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .search-overlay__backdrop {
+            position: absolute;
+            inset: 0;
+            background: rgba(42, 37, 41, .5);
+            cursor: pointer;
+        }
+
+        .search-overlay__panel {
+            position: relative;
+            background: var(--clr-bg);
+            padding: 0;
+            transform: translateY(-100%);
+            transition: transform .35s cubic-bezier(.4, 0, .2, 1);
+        }
+
+        .search-overlay.active .search-overlay__panel {
+            transform: translateY(0);
+        }
+
+        .search-overlay__header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem 2rem;
+            border-bottom: 1px solid var(--clr-border);
+        }
+
+        .search-overlay__close {
+            background: none;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: .35rem;
+            color: var(--clr-text);
+            font-family: var(--font);
+            font-size: .85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: .06em;
+            padding: .25rem 0;
+            transition: color var(--transition);
+        }
+
+        .search-overlay__close:hover {
+            color: var(--clr-accent);
+        }
+
+        .search-overlay__close svg {
+            width: 16px;
+            height: 16px;
+            stroke: currentColor;
+            stroke-width: 2;
+            fill: none;
+        }
+
+        .search-overlay__form {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            gap: .5rem;
+            position: relative;
+        }
+
+        .search-overlay__form svg {
+            width: 20px;
+            height: 20px;
+            stroke: var(--clr-text-muted);
+            stroke-width: 2;
+            fill: none;
+            flex-shrink: 0;
+        }
+
+        .search-overlay__input {
+            flex: 1;
+            border: none;
+            background: transparent;
+            font-family: var(--font);
+            font-size: 1.1rem;
+            color: var(--clr-text);
+            outline: none;
+            padding: .5rem 0;
+        }
+
+        .search-overlay__input::placeholder {
+            color: var(--clr-text-muted);
+        }
+
+        .search-overlay__clear {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--clr-text-muted);
+            padding: .25rem;
+            display: none;
+            transition: color var(--transition);
+        }
+
+        .search-overlay__clear:hover {
+            color: var(--clr-text);
+        }
+
+        .search-overlay__clear svg {
+            width: 16px;
+            height: 16px;
+            stroke: currentColor;
+            stroke-width: 2;
+            fill: none;
+        }
+
+        .search-overlay__clear.visible {
+            display: flex;
+        }
+
+        .search-overlay__results {
+            padding: 1.5rem 2rem 2rem;
+            max-height: 60vh;
+            overflow-y: auto;
+        }
+
+        .search-overlay__results-title {
+            font-size: .75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: .08em;
+            color: var(--clr-text-muted);
+            margin-bottom: 1rem;
+        }
+
+        .search-overlay__grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1.25rem;
+        }
+
+        .search-result-card {
+            background: var(--clr-surface);
+            border: 1px solid var(--clr-border);
+            border-radius: var(--radius);
+            padding: 1rem;
+            text-decoration: none;
+            color: var(--clr-text);
+            transition: box-shadow var(--transition), transform var(--transition);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .search-result-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-hover);
+            color: var(--clr-text);
+        }
+
+        .search-result-card .sr-category {
+            font-size: .7rem;
+            text-transform: uppercase;
+            letter-spacing: .06em;
+            color: var(--clr-accent);
+            font-weight: 500;
+            margin-bottom: .15rem;
+        }
+
+        .search-result-card .sr-name {
+            font-size: .95rem;
+            font-weight: 600;
+            margin-bottom: .35rem;
+        }
+
+        .search-result-card .sr-price {
+            font-weight: 700;
+            font-size: .95rem;
+            margin-top: auto;
+        }
+
+        .search-result-card .sr-meta {
+            font-size: .8rem;
+            color: var(--clr-text-muted);
+        }
+
+        .search-overlay__empty {
+            text-align: center;
+            color: var(--clr-text-muted);
+            padding: 2rem 0;
         }
     </style>
     {% block extra_css %}{% endblock %}
@@ -118,8 +351,36 @@
         <a href="{% url 'products:list' %}" class="logo">Sillage</a>
         <nav>
             <a href="{% url 'products:list' %}">Каталог</a>
+            <button type="button" class="search-trigger" id="search-open" aria-label="Пошук">
+                <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                Пошук
+            </button>
         </nav>
     </header>
+
+    <!-- ── Search overlay ──────────────────────── -->
+    <div class="search-overlay" id="search-overlay">
+        <div class="search-overlay__panel">
+            <div class="search-overlay__header">
+                <button type="button" class="search-overlay__close" id="search-close">
+                    <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                    Закрити
+                </button>
+                <form class="search-overlay__form" id="search-form" method="get" action="{% url 'products:list' %}">
+                    <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                    <input type="text" name="search" class="search-overlay__input" id="search-input"
+                           placeholder="Знайти аромат…" autocomplete="off">
+                    <button type="button" class="search-overlay__clear" id="search-clear" aria-label="Очистити">
+                        <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                    </button>
+                </form>
+            </div>
+            <div class="search-overlay__results" id="search-results">
+                <!-- Live results injected by JS on product list page -->
+            </div>
+        </div>
+        <div class="search-overlay__backdrop" id="search-backdrop"></div>
+    </div>
 
     <main class="container">
         {% block content %}{% endblock %}
@@ -129,7 +390,49 @@
         &copy; 2026 Sillage — Парфумерний декант-магазин
     </footer>
 
+    <script>
+    (function() {
+        const overlay = document.getElementById('search-overlay');
+        const input = document.getElementById('search-input');
+        const clearBtn = document.getElementById('search-clear');
+        const openBtn = document.getElementById('search-open');
+        const closeBtn = document.getElementById('search-close');
+        const backdrop = document.getElementById('search-backdrop');
+
+        function openSearch() {
+            overlay.classList.add('active');
+            document.body.style.overflow = 'hidden';
+            setTimeout(function() { input.focus(); }, 350);
+        }
+
+        function closeSearch() {
+            overlay.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        openBtn.addEventListener('click', openSearch);
+        closeBtn.addEventListener('click', closeSearch);
+        backdrop.addEventListener('click', closeSearch);
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && overlay.classList.contains('active')) {
+                closeSearch();
+            }
+        });
+
+        input.addEventListener('input', function() {
+            clearBtn.classList.toggle('visible', input.value.length > 0);
+        });
+
+        clearBtn.addEventListener('click', function() {
+            input.value = '';
+            clearBtn.classList.remove('visible');
+            input.focus();
+        });
+    })();
+    </script>
+
     {% block extra_js %}{% endblock %}
 </body>
 
-</html>
+</html>
