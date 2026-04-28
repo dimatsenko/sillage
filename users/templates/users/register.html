@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <title>Реєстрація - Sillage</title>
+</head>
+<body>
+    <h2>Реєстрація</h2>
+    <form method="POST">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Зареєструватися</button>
+    </form>
+    <p>Вже є акаунт? <a href="{% url 'users:login' %}">Увійти</a></p>
+</body>
+</html>
