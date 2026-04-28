@@ -1,4 +1,4 @@
-{% extends "products/base.html" %}
+{% extends "base.html" %}
 
 {% block title %}Каталог парфумерії — Sillage{% endblock %}
 {% block meta_description %}Перегляньте наш каталог парфумерних деканів. Фільтруйте за категорією, брендом, ціною та
@@ -139,6 +139,9 @@
 
     .filter-panel__inner input,
     .filter-panel__inner select {
+        box-sizing: border-box;
+        height: 42px;
+        margin: 0;
         padding: .55rem .75rem;
         border: 1px solid var(--clr-border);
         border-radius: var(--radius);
@@ -148,6 +151,16 @@
         font-size: .9rem;
         outline: none;
         transition: border-color var(--transition);
+    }
+    
+    .filter-panel__inner select {
+        -webkit-appearance: none;
+        appearance: none;
+        background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%232A2529' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 0.75rem center;
+        background-size: 16px;
+        padding-right: 2.5rem;
     }
 
     .filter-panel__inner input:focus,
