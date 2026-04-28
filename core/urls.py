@@ -24,5 +24,7 @@ def home_dummy_view(request):
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('users/', include('users.urls')),
+    path('products/', include('products.urls')),
+    path('orders/', include('orders.urls')),
     path('', home_dummy_view, name='core-home'),
 ]
