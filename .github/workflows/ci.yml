@@ -1,0 +1,72 @@
+name: CI — Build, Run & Test
+
+on:
+  push:
+    branches: [main, master, develop]
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      # ── 1. Checkout the code ────────────────────────
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # ── 2. Build Docker image ───────────────────────
+      - name: Build Docker image
+        run: docker build -t sillage-web:ci .
+
+      # ── 3. Run migrations inside the container ──────
+      - name: Run database migrations
+        run: |
+          docker run --rm \
+            -e DJANGO_SETTINGS_MODULE=core.settings \
+            -e DEBUG=1 \
+            -e ALLOWED_HOSTS=* \
+            sillage-web:ci \
+            python manage.py migrate --noinput
+
+      # ── 4. Run test suite inside the container ──────
+      - name: Run tests
+        run: |
+          docker run --rm \
+            -e DJANGO_SETTINGS_MODULE=core.settings \
+            -e DEBUG=1 \
+            -e ALLOWED_HOSTS=* \
+            sillage-web:ci \
+            python -m pytest -v --tb=short
+
+      # ── 5. Start container and verify it responds ───
+      - name: Start container
+        run: |
+          docker run -d \
+            --name sillage-ci \
+            -p 8000:8000 \
+            -e DJANGO_SETTINGS_MODULE=core.settings \
+            -e DEBUG=1 \
+            -e ALLOWED_HOSTS=* \
+            sillage-web:ci \
+            sh -c "python manage.py migrate --noinput && gunicorn core.wsgi:application --bind 0.0.0.0:8000 --workers 2"
+
+      - name: Wait for container to become healthy
+        run: |
+          echo "Waiting for the web server to start..."
+          for i in $(seq 1 30); do
+            if curl -s -o /dev/null -w "%{http_code}" http://localhost:8000/ | grep -qE "200|301|302"; then
+              echo "✅ Server is responding!"
+              exit 0
+            fi
+            echo "  Attempt $i/30 — not ready yet..."
+            sleep 2
+          done
+          echo "❌ Server did not start in time"
+          docker logs sillage-ci
+          exit 1
+
+      # ── 6. Cleanup ─────────────────────────────────
+      - name: Cleanup container
+        if: always()
+        run: docker rm -f sillage-ci || true
