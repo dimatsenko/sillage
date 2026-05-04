@@ -1,8 +1,9 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import login
 from django.contrib.auth.views import LoginView, LogoutView
+from django.contrib.auth.decorators import login_required
 from django.urls import reverse_lazy
-from .forms import CustomUserCreationForm
+from .forms import CustomUserCreationForm, UserProfileUpdateForm
 from django.contrib import messages
 
 def register_view(request):
@@ -26,4 +27,21 @@ class CustomLoginView(LoginView):
 
 class CustomLogoutView(LogoutView):
     next_page = reverse_lazy('users:login')
+
+@login_required
+def profile_view(request):
+    orders = request.user.orders.all().prefetch_related('items__product')
+    return render(request, 'users/profile.html', {'orders': orders})
+
+@login_required
+def profile_edit_view(request):
+    if request.method == 'POST':
+        form = UserProfileUpdateForm(request.POST, instance=request.user)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Ваші дані успішно оновлено!')
+            return redirect('users:profile')
+    else:
+        form = UserProfileUpdateForm(instance=request.user)
+    return render(request, 'users/profile_edit.html', {'form': form})
 

@@ -334,7 +334,7 @@
             <a href="{% url 'orders:cart_detail' %}">Кошик</a>
             
             {% if user.is_authenticated %}
-                <a href="#">Профіль ({{ user.username }})</a>
+                <a href="{% url 'users:profile' %}">Профіль ({{ user.username }})</a>
                 <form method="POST" action="{% url 'users:logout' %}" class="nav-form">
                     {% csrf_token %}
                     <button type="submit" class="nav-btn">Вийти</button>
