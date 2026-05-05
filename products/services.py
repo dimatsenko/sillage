@@ -27,9 +27,12 @@ def filter_products(
     *,
     category_slug: Optional[str] = None,
     brand: Optional[str] = None,
+    brands: Optional[list[str]] = None,
     min_price: Optional[str] = None,
     max_price: Optional[str] = None,
     volume: Optional[str] = None,
+    gender: Optional[str] = None,
+    fragrance_group: Optional[str] = None,
 ) -> QuerySet[Product]:
     """
     Apply catalogue filters to a Product queryset.
@@ -52,8 +55,16 @@ def filter_products(
     if category_slug:
         queryset = queryset.filter(category__slug=category_slug)
 
-    if brand:
+    if brands:
+        queryset = queryset.filter(brand__in=brands)
+    elif brand:
         queryset = queryset.filter(brand__icontains=brand)
+
+    if gender:
+        queryset = queryset.filter(gender=gender)
+
+    if fragrance_group:
+        queryset = queryset.filter(fragrance_group=fragrance_group)
 
     if min_price is not None:
         try:
