@@ -1,31 +1,34 @@
 {% extends "products/base.html" %}
 
 {% block title %}Каталог парфумерії — Sillage{% endblock %}
-{% block meta_description %}Перегляньте наш каталог парфумерних деканів. Фільтруйте за категорією, брендом, ціною та
-об'ємом.{% endblock %}
+{% block meta_description %}Перегляньте наш каталог парфумерних деканів. Фільтруйте за категорією, брендом, ціною та об'ємом.{% endblock %}
 
 {% block extra_css %}
 <style>
-    /* ── Toolbar (search + filter toggle) ──── */
-    .catalog-toolbar {
-        display: flex;
-        align-items: center;
-        gap: 1rem;
-        margin-bottom: 1.5rem;
+    /* Layout */
+    .catalog-layout {
+        display: grid;
+        grid-template-columns: 260px 1fr; /* Left sidebar */
+        gap: 2.5rem;
+        align-items: start;
+        margin-top: 2rem;
     }
 
-    .catalog-search {
-        flex: 1;
-        display: flex;
-        align-items: center;
-        gap: .5rem;
+    @media (max-width: 900px) {
+        .catalog-layout {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    /* Sidebar Filters */
+    .filters-sidebar {
         background: var(--clr-surface);
+        padding: 1.5rem;
         border: 1px solid var(--clr-border);
         border-radius: var(--radius);
-        padding: .55rem 1rem;
-        transition: border-color var(--transition);
     }
 
+<<<<<<< Updated upstream
     .catalog-search:focus-within {
         border-color: var(--clr-primary);
     }
@@ -149,51 +152,159 @@
         outline: none;
         transition: border-color var(--transition);
     }
+=======
+    .filter-group {
+        margin-bottom: 2rem;
+        border-bottom: 1px solid var(--clr-border);
+        padding-bottom: 1.5rem;
+    }
+    
+    .filter-group:last-child {
+        margin-bottom: 0;
+        border-bottom: none;
+        padding-bottom: 0;
+    }
+>>>>>>> Stashed changes
 
-    .filter-panel__inner input:focus,
-    .filter-panel__inner select:focus {
+    .filter-title {
+        font-size: 0.95rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        margin-bottom: 1rem;
+        color: var(--clr-primary);
+        letter-spacing: 0.05em;
+    }
+
+    /* Checkbox List (Brand) */
+    .checkbox-list {
+        display: flex;
+        flex-direction: column;
+        gap: 0.6rem;
+    }
+
+    .checkbox-item {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        font-size: 0.9rem;
+        cursor: pointer;
+        color: var(--clr-text);
+    }
+
+    .checkbox-item input[type="checkbox"] {
+        width: 16px;
+        height: 16px;
+        accent-color: var(--clr-primary);
+        cursor: pointer;
+    }
+
+    /* Inputs (Price, Volume) */
+    .input-row {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .filter-input {
+        width: 100%;
+        padding: 0.5rem 0.8rem;
+        border: 1px solid var(--clr-border);
+        border-radius: 4px;
+        background: var(--clr-bg);
+        font-family: var(--font);
+        font-size: 0.9rem;
+        outline: none;
+        transition: border-color var(--transition);
+    }
+
+    .filter-input:focus {
         border-color: var(--clr-primary);
     }
 
-    .filter-actions {
-        display: flex;
-        gap: .5rem;
-        align-self: flex-end;
-    }
-
-    .filter-actions .btn {
-        padding: .55rem 1.25rem;
+    .btn-apply {
+        width: 100%;
+        padding: 0.8rem;
         background: var(--clr-primary);
         color: var(--clr-bg);
         border: none;
         border-radius: var(--radius);
-        cursor: pointer;
         font-family: var(--font);
-        font-size: .85rem;
+        font-size: 0.9rem;
         font-weight: 600;
+        cursor: pointer;
         transition: background var(--transition);
+        margin-top: 1rem;
     }
 
-    .filter-actions .btn:hover {
+    .btn-apply:hover {
         background: var(--clr-primary-dim);
     }
 
-    .filter-actions .btn-reset {
-        background: transparent;
-        border: 1px solid var(--clr-primary);
-        color: var(--clr-primary);
+    .btn-reset {
+        display: block;
+        text-align: center;
+        margin-top: 0.8rem;
+        font-size: 0.85rem;
+        color: var(--clr-text-muted);
+        text-decoration: underline;
     }
 
-    .filter-actions .btn-reset:hover {
-        border-color: var(--clr-danger);
-        color: var(--clr-danger);
-        background: transparent;
+    /* Main Content */
+    .catalog-main {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
     }
 
-    /* ── Product grid ─────────────────────── */
+    .content-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid var(--clr-border);
+    }
+
+    .content-title {
+        font-size: 1.8rem;
+        font-weight: 600;
+        margin: 0;
+    }
+
+    /* Sorting Dropdown */
+    .sort-wrapper {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.9rem;
+        color: var(--clr-text-muted);
+    }
+
+    .sort-select {
+        padding: 0.5rem 2rem 0.5rem 1rem;
+        border: 1px solid var(--clr-border);
+        border-radius: 4px;
+        background-color: var(--clr-surface);
+        font-family: var(--font);
+        font-size: 0.95rem;
+        color: var(--clr-text);
+        cursor: pointer;
+        outline: none;
+        -webkit-appearance: none;
+        appearance: none;
+        background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 0.75rem center;
+        background-size: 14px;
+    }
+
+    .sort-select:focus {
+        border-color: var(--clr-primary);
+    }
+
+    /* Product Grid */
     .product-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
         gap: 1.5rem;
     }
 
@@ -231,10 +342,6 @@
         color: var(--clr-text);
     }
 
-    .product-card .name a:hover {
-        color: var(--clr-accent);
-    }
-
     .product-card .meta {
         font-size: .85rem;
         color: var(--clr-text-muted);
@@ -248,20 +355,24 @@
         color: var(--clr-primary);
     }
 
+    /* Pagination */
     .pagination {
         display: flex;
         justify-content: center;
-        gap: .5rem;
+        gap: 0.5rem;
         margin-top: 2.5rem;
         flex-wrap: wrap;
     }
 
-    .pagination a,
-    .pagination span {
-        display: inline-block;
-        padding: .5rem 1rem;
-        border-radius: var(--radius);
-        font-size: .9rem;
+    .pagination a, .pagination span {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 36px;
+        height: 36px;
+        padding: 0 0.5rem;
+        border-radius: 4px;
+        font-size: 0.9rem;
         border: 1px solid var(--clr-border);
         transition: all var(--transition);
     }
@@ -282,148 +393,150 @@
         border-color: var(--clr-primary);
         font-weight: 600;
     }
-
-    .result-count {
-        color: var(--clr-text-muted);
-        font-size: .9rem;
-        margin-bottom: 1rem;
-    }
 </style>
 {% endblock %}
 
 {% block content %}
-<h1 style="font-size:1.6rem; margin-bottom:1.25rem;">Каталог парфумерії</h1>
+<!-- Form wraps both sidebar and main content so sorting and filters submit together -->
+<form method="get" id="filter-form" class="catalog-layout">
+    
+    <!-- Sidebar Filters (Left) -->
+    <aside class="filters-sidebar">
+        {% if request.GET.search %}
+            <input type="hidden" name="search" value="{{ request.GET.search }}">
+        {% endif %}
 
-<form method="get" id="filter-form">
-    <!-- Toolbar: search + filter toggle -->
-    <div class="catalog-toolbar">
-        <div class="catalog-search">
-            <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-            <input type="text" name="search" id="filter-search"
-                   value="{{ current_filters.search }}"
-                   placeholder="Знайти аромат…">
+        <!-- Brand Filter (Checkbox list) -->
+        {% if available_brands %}
+        <div class="filter-group">
+            <div class="filter-title">Бренд</div>
+            <div class="checkbox-list">
+                {% for b in available_brands %}
+                <label class="checkbox-item">
+                    <input type="checkbox" name="brand" value="{{ b }}" {% if b in current_filters.brands %}checked{% endif %}>
+                    {{ b }}
+                </label>
+                {% endfor %}
+            </div>
         </div>
-        <button type="button" class="filter-toggle" id="filter-toggle">
-            <svg viewBox="0 0 24 24"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/><circle cx="8" cy="6" r="2"/><circle cx="16" cy="12" r="2"/><circle cx="10" cy="18" r="2"/></svg>
-            Фільтри
-        </button>
-    </div>
+        {% endif %}
 
-    <!-- Collapsible filter panel -->
-    <div class="filter-panel" id="filter-panel">
-        <div class="filter-panel__inner">
-            <div class="field">
-                <label for="filter-category">Категорія</label>
-                <select name="category" id="filter-category">
-                    <option value="">Усі категорії</option>
-                    {% for cat in categories %}
-                    <option value="{{ cat.slug }}" {% if current_filters.category == cat.slug %}selected{% endif %}>
-                        {{ cat.name }}
-                    </option>
-                    {% endfor %}
+        <!-- Price Filter -->
+        <div class="filter-group">
+            <div class="filter-title">Ціна (₴)</div>
+            <div class="input-row">
+                <input type="number" name="min_price" class="filter-input" placeholder="Від" value="{{ current_filters.min_price }}">
+                <span style="color: var(--clr-text-muted);">-</span>
+                <input type="number" name="max_price" class="filter-input" placeholder="До" value="{{ current_filters.max_price }}">
+            </div>
+        </div>
+
+        <!-- Gender Filter -->
+        <div class="filter-group">
+            <div class="filter-title">Стать</div>
+            <select name="gender" class="filter-input" style="-webkit-appearance: none; appearance: none; background-image: url('data:image/svg+xml;charset=UTF-8,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'black\' stroke-width=\'2\' stroke-linecap=\'round\' stroke-linejoin=\'round\'%3E%3Cpolyline points=\'6 9 12 15 18 9\'%3E%3C/polyline%3E%3C/svg%3E'); background-repeat: no-repeat; background-position: right 0.7rem center; background-size: 14px;">
+                <option value="">Усі</option>
+                <option value="M" {% if current_filters.gender == 'M' %}selected{% endif %}>Чоловічі</option>
+                <option value="F" {% if current_filters.gender == 'F' %}selected{% endif %}>Жіночі</option>
+                <option value="U" {% if current_filters.gender == 'U' %}selected{% endif %}>Унісекс</option>
+            </select>
+        </div>
+
+        <!-- Fragrance Group Filter -->
+        {% if available_fragrance_groups %}
+        <div class="filter-group">
+            <div class="filter-title">Група ароматів</div>
+            <select name="fragrance_group" class="filter-input" style="-webkit-appearance: none; appearance: none; background-image: url('data:image/svg+xml;charset=UTF-8,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'black\' stroke-width=\'2\' stroke-linecap=\'round\' stroke-linejoin=\'round\'%3E%3Cpolyline points=\'6 9 12 15 18 9\'%3E%3C/polyline%3E%3C/svg%3E'); background-repeat: no-repeat; background-position: right 0.7rem center; background-size: 14px;">
+                <option value="">Усі групи</option>
+                {% for group in available_fragrance_groups %}
+                <option value="{{ group }}" {% if current_filters.fragrance_group == group %}selected{% endif %}>{{ group }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        {% endif %}
+
+        <!-- Volume Filter -->
+        <div class="filter-group">
+            <div class="filter-title">Об'єм</div>
+            <select name="volume" class="filter-input" style="-webkit-appearance: none; appearance: none; background-image: url('data:image/svg+xml;charset=UTF-8,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'black\' stroke-width=\'2\' stroke-linecap=\'round\' stroke-linejoin=\'round\'%3E%3Cpolyline points=\'6 9 12 15 18 9\'%3E%3C/polyline%3E%3C/svg%3E'); background-repeat: no-repeat; background-position: right 0.7rem center; background-size: 14px;">
+                <option value="">Усі об'єми</option>
+                <option value="15" {% if current_filters.volume == '15' %}selected{% endif %}>15 мл</option>
+                <option value="30" {% if current_filters.volume == '30' %}selected{% endif %}>30 мл</option>
+                <option value="75" {% if current_filters.volume == '75' %}selected{% endif %}>75 мл</option>
+                <option value="100" {% if current_filters.volume == '100' %}selected{% endif %}>100 мл</option>
+            </select>
+        </div>
+
+        <button type="submit" class="btn-apply">Застосувати</button>
+        <a href="{% url 'products:list' %}" class="btn-reset">Скинути всі фільтри</a>
+    </aside>
+
+    <!-- Main Content (Right) -->
+    <main class="catalog-main">
+        
+        <!-- Header with Sorting -->
+        <div class="content-header">
+            <h1 class="content-title">Каталог</h1>
+            
+            <div class="sort-wrapper">
+                <label for="sort-select">Сортування:</label>
+                <select name="sort" id="sort-select" class="sort-select" onchange="this.form.submit()">
+                    <option value="" {% if not request.GET.sort %}selected{% endif %}>За замовчуванням</option>
+                    <option value="price_asc" {% if request.GET.sort == 'price_asc' %}selected{% endif %}>Дешевші</option>
+                    <option value="price_desc" {% if request.GET.sort == 'price_desc' %}selected{% endif %}>Дорожчі</option>
+                    <option value="popular" {% if request.GET.sort == 'popular' %}selected{% endif %}>Популярні</option>
                 </select>
             </div>
-
-            <div class="field">
-                <label for="filter-brand">Бренд</label>
-                <input type="text" name="brand" id="filter-brand" value="{{ current_filters.brand }}"
-                    placeholder="Назва бренду…">
-            </div>
-
-            <div class="field">
-                <label for="filter-min-price">Ціна від (грн)</label>
-                <input type="number" name="min_price" id="filter-min-price" value="{{ current_filters.min_price }}"
-                    min="0" step="0.01">
-            </div>
-
-            <div class="field">
-                <label for="filter-max-price">Ціна до (грн)</label>
-                <input type="number" name="max_price" id="filter-max-price" value="{{ current_filters.max_price }}"
-                    min="0" step="0.01">
-            </div>
-
-            <div class="field">
-                <label for="filter-volume">Об'єм (мл)</label>
-                <input type="number" name="volume" id="filter-volume" value="{{ current_filters.volume }}" min="1">
-            </div>
-
-            <div class="filter-actions">
-                <button type="submit" class="btn" id="btn-filter">Застосувати</button>
-                <a href="{% url 'products:list' %}" class="btn btn-reset" id="btn-reset">Скинути</a>
-            </div>
         </div>
-    </div>
+
+        {% if products %}
+            <p style="color: var(--clr-text-muted); font-size: 0.9rem; margin-top: -0.5rem;">
+                Знайдено товарів: {{ page_obj.paginator.count }}
+            </p>
+
+            <div class="product-grid">
+                {% for product in products %}
+                <article class="product-card" id="product-card-{{ product.pk }}">
+                    <span class="brand">{{ product.brand }}</span>
+                    <h2 class="name">
+                        <a href="{{ product.get_absolute_url }}">{{ product.name }}</a>
+                    </h2>
+                    <p class="meta">{{ product.category.name|default:"Розпив" }} · {{ product.volume }}&nbsp;мл</p>
+                    <p class="price">{{ product.price }}&nbsp;грн</p>
+                </article>
+                {% endfor %}
+            </div>
+
+            <!-- Pagination -->
+            {% if is_paginated %}
+            <nav class="pagination" aria-label="Навігація сторінками">
+                {% if page_obj.has_previous %}
+                <a href="?page=1{% for k, v in current_filters.items %}{% if v %}&{{ k }}={{ v }}{% endif %}{% endfor %}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}">&laquo;</a>
+                <a href="?page={{ page_obj.previous_page_number }}{% for k, v in current_filters.items %}{% if v %}&{{ k }}={{ v }}{% endif %}{% endfor %}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}">&lsaquo;</a>
+                {% endif %}
+
+                <span class="current">{{ page_obj.number }}</span>
+
+                {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}{% for k, v in current_filters.items %}{% if v %}&{{ k }}={{ v }}{% endif %}{% endfor %}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}">&rsaquo;</a>
+                <a href="?page={{ page_obj.paginator.num_pages }}{% for k, v in current_filters.items %}{% if v %}&{{ k }}={{ v }}{% endif %}{% endfor %}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}">&raquo;</a>
+                {% endif %}
+            </nav>
+            {% endif %}
+
+        {% else %}
+            <div style="background: var(--clr-surface); border: 1px solid var(--clr-border); border-radius: var(--radius); padding: 2rem; text-align: center; color: var(--clr-text-muted);">
+                На жаль, товарів за вашим запитом не знайдено. Спробуйте змінити параметри пошуку або скинути фільтри.
+            </div>
+        {% endif %}
+    </main>
+
 </form>
-
-{% if products %}
-<p class="result-count">Знайдено товарів: {{ page_obj.paginator.count }}</p>
-
-<div class="product-grid">
-    {% for product in products %}
-    <article class="product-card" id="product-card-{{ product.pk }}">
-        <span class="brand">{{ product.brand }}</span>
-        <h2 class="name">
-            <a href="{{ product.get_absolute_url }}">{{ product.name }}</a>
-        </h2>
-        <p class="meta">{{ product.category.name }} · {{ product.volume }}&nbsp;мл</p>
-        <p class="price">{{ product.price }}&nbsp;грн</p>
-    </article>
-    {% endfor %}
-</div>
-
-{% if is_paginated %}
-<nav class="pagination" aria-label="Навігація сторінками">
-    {% if page_obj.has_previous %}
-    <a href="?page=1{% for k, v in current_filters.items %}{% if v %}&{{ k }}={{ v }}{% endif %}{% endfor %}"
-        id="page-first">&laquo; Перша</a>
-    <a href="?page={{ page_obj.previous_page_number }}{% for k, v in current_filters.items %}{% if v %}&{{ k }}={{ v }}{% endif %}{% endfor %}"
-        id="page-prev">&lsaquo; Назад</a>
-    {% endif %}
-
-    <span class="current" id="page-current">
-        Сторінка {{ page_obj.number }} з {{ page_obj.paginator.num_pages }}
-    </span>
-
-    {% if page_obj.has_next %}
-    <a href="?page={{ page_obj.next_page_number }}{% for k, v in current_filters.items %}{% if v %}&{{ k }}={{ v }}{% endif %}{% endfor %}"
-        id="page-next">Вперед &rsaquo;</a>
-    <a href="?page={{ page_obj.paginator.num_pages }}{% for k, v in current_filters.items %}{% if v %}&{{ k }}={{ v }}{% endif %}{% endfor %}"
-        id="page-last">Остання &raquo;</a>
-    {% endif %}
-</nav>
-{% endif %}
-
-{% else %}
-<p class="msg-info" id="no-results">
-    На жаль, товарів за вашим запитом не знайдено. Спробуйте змінити параметри пошуку.
-</p>
-{% endif %}
 {% endblock %}
 
 {% block extra_js %}
 <script>
-(function() {
-    const toggle = document.getElementById('filter-toggle');
-    const panel = document.getElementById('filter-panel');
-
-    // Auto-open if any filter is active
-    const hasFilters = panel.querySelector('input[value]:not([value=""]), select option[selected]');
-    if (hasFilters) {
-        panel.classList.add('open');
-        toggle.classList.add('active');
-    }
-
-    toggle.addEventListener('click', function() {
-        panel.classList.toggle('open');
-        toggle.classList.toggle('active');
-    });
-
-    // Submit search on Enter from the search input
-    document.getElementById('filter-search').addEventListener('keydown', function(e) {
-        if (e.key === 'Enter') {
-            document.getElementById('filter-form').submit();
-        }
-    });
-})();
+    // Якщо у вас в base.html залишився пошук в шапці (поза цією формою), 
+    // він буде працювати як раніше.
 </script>
 {% endblock %}

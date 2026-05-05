@@ -41,23 +41,30 @@ class ProductListView(ListView):
         return filter_products(
             queryset,
             category_slug=params.get('category'),
-            brand=params.get('brand'),
+            brands=params.getlist('brand'),
             min_price=params.get('min_price'),
             max_price=params.get('max_price'),
             volume=params.get('volume'),
+            gender=params.get('gender'),
+            fragrance_group=params.get('fragrance_group'),
         )
 
     def get_context_data(self, **kwargs):
         """Inject categories and active filters into template context."""
         context = super().get_context_data(**kwargs)
         context['categories'] = Category.objects.all()
+        # Fetch distinct brands and fragrance groups that actually exist in the DB for the filter list
+        context['available_brands'] = Product.objects.values_list('brand', flat=True).distinct().exclude(brand='').order_by('brand')
+        context['available_fragrance_groups'] = Product.objects.values_list('fragrance_group', flat=True).distinct().exclude(fragrance_group='').order_by('fragrance_group')
         context['current_filters'] = {
             'search': self.request.GET.get('search', ''),
             'category': self.request.GET.get('category', ''),
-            'brand': self.request.GET.get('brand', ''),
+            'brands': self.request.GET.getlist('brand'),
             'min_price': self.request.GET.get('min_price', ''),
             'max_price': self.request.GET.get('max_price', ''),
             'volume': self.request.GET.get('volume', ''),
+            'gender': self.request.GET.get('gender', ''),
+            'fragrance_group': self.request.GET.get('fragrance_group', ''),
         }
         return context
 

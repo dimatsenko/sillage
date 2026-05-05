@@ -45,15 +45,23 @@ class Product(models.Model):
     A perfume decant product available in the store.
 
     Fields:
-        name        — product display name.
-        brand       — perfume house / brand.
-        description — rich-text product description.
-        price       — price in UAH (≥ 0.01).
-        volume      — decant volume in ml (≥ 1).
-        category    — FK to Category.
-        created_at  — auto-set on creation.
-        updated_at  — auto-set on every save.
+        name            — product display name.
+        brand           — perfume house / brand.
+        description     — rich-text product description.
+        price           — price in UAH (≥ 0.01).
+        volume          — decant volume in ml (≥ 1).
+        category        — FK to Category.
+        gender          — gender category.
+        fragrance_group — fragrance group (e.g. Floral, Woody).
+        created_at      — auto-set on creation.
+        updated_at      — auto-set on every save.
     """
+
+    GENDER_CHOICES = [
+        ('M', 'Чоловічі'),
+        ('F', 'Жіночі'),
+        ('U', 'Унісекс'),
+    ]
 
     name = models.CharField(
         max_length=255,
@@ -85,6 +93,18 @@ class Product(models.Model):
         on_delete=models.PROTECT,
         related_name='products',
         verbose_name='Категорія',
+    )
+    gender = models.CharField(
+        max_length=1,
+        choices=GENDER_CHOICES,
+        default='U',
+        verbose_name='Стать',
+    )
+    fragrance_group = models.CharField(
+        max_length=100,
+        blank=True,
+        default='',
+        verbose_name='Група ароматів',
     )
     created_at = models.DateTimeField(
         auto_now_add=True,
