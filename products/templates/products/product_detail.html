@@ -6,19 +6,37 @@
 
 {% block extra_css %}
 <style>
-    .breadcrumb {
+    /* Breadcrumbs */
+    .breadcrumbs {
+        display: flex;
+        align-items: center;
+        gap: .5rem;
         font-size: .85rem;
         color: var(--clr-text-muted);
-        margin-bottom: 1.5rem;
+        margin-bottom: 2rem;
     }
 
-    .breadcrumb a {
-        color: var(--clr-accent);
-        font-weight: 500;
+    .breadcrumbs a {
+        color: var(--clr-text-muted);
     }
 
-    .breadcrumb a:hover {
+    .breadcrumbs a:hover {
         color: var(--clr-primary);
+    }
+
+    .breadcrumbs span {
+        opacity: .5;
+    }
+
+    .quantity-spinner {
+        width: 70px;
+        padding: .6rem;
+        border: 1px solid var(--clr-border);
+        border-radius: var(--radius);
+        background: var(--clr-bg);
+        font-family: var(--font);
+        font-size: 1rem;
+        text-align: center;
     }
 
     .detail-card {
@@ -133,13 +151,77 @@
         background: var(--clr-primary);
         color: var(--clr-bg);
     }
+
+    /* Add to Cart Form in Detail */
+    .add-to-cart-form {
+        margin-top: 2rem;
+        padding-top: 2rem;
+        border-top: 1px solid var(--clr-border);
+        display: flex;
+        flex-direction: column;
+        gap: 1.25rem;
+    }
+
+    .quantity-wrapper {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .quantity-wrapper label {
+        font-size: .9rem;
+        font-weight: 600;
+        color: var(--clr-text-muted);
+    }
+
+    .quantity-selector {
+        padding: .6rem 1rem;
+        border: 1px solid var(--clr-border);
+        border-radius: var(--radius);
+        background: var(--clr-bg);
+        font-family: var(--font);
+        font-size: 1rem;
+        outline: none;
+        cursor: pointer;
+    }
+
+    .btn-detail-add-cart {
+        padding: 1rem 2rem;
+        background: var(--clr-primary);
+        color: var(--clr-bg);
+        border: none;
+        border-radius: var(--radius);
+        font-family: var(--font);
+        font-size: 1rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: background var(--transition);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: .75rem;
+    }
+
+    .btn-detail-add-cart:hover {
+        background: var(--clr-primary-dim);
+    }
+
+    .btn-detail-add-cart svg {
+        width: 20px;
+        height: 20px;
+        fill: none;
+        stroke: currentColor;
+        stroke-width: 2;
+    }
 </style>
 {% endblock %}
 
 {% block content %}
-<nav class="breadcrumb" aria-label="Навігація">
-    <a href="{% url 'products:list' %}">Каталог</a> &rsaquo;
-    <a href="{% url 'products:list' %}?category={{ product.category.slug }}">{{ product.category.name }}</a> &rsaquo;
+<nav class="breadcrumbs" aria-label="Breadcrumb">
+    <a href="{% url 'core-home' %}">Головна</a>
+    <span>/</span>
+    <a href="{% url 'products:list' %}">Каталог</a>
+    <span>/</span>
     <span>{{ product.name }}</span>
 </nav>
 
@@ -164,6 +246,12 @@
                 <dt>Бренд</dt>
                 <dd>{{ product.brand }}</dd>
 
+                <dt>Стать</dt>
+                <dd>{{ product.get_gender_display }}</dd>
+
+                <dt>Група</dt>
+                <dd>{{ product.get_fragrance_group_display }}</dd>
+
                 <dt>Об'єм</dt>
                 <dd>{{ product.volume }}&nbsp;мл</dd>
             </dl>
@@ -176,10 +264,18 @@
             </div>
             {% endif %}
 
-            <div class="timestamps">
-                Додано: {{ product.created_at|date:"d.m.Y H:i" }} ·
-                Оновлено: {{ product.updated_at|date:"d.m.Y H:i" }}
-            </div>
+            <form action="{% url 'orders:cart_add' product.id %}" method="post" class="add-to-cart-form">
+                {% csrf_token %}
+                <div class="quantity-wrapper">
+                    <label for="id_quantity">Кількість:</label>
+                    {{ cart_product_form.quantity }}
+                </div>
+                {{ cart_product_form.override }}
+                <button type="submit" class="btn-detail-add-cart">
+                    <svg viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4H6z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+                    Додати в кошик
+                </button>
+            </form>
         </div>
     </div>
 </article>
@@ -187,4 +283,4 @@
 <a href="{% url 'products:list' %}" class="back-link" id="btn-back">
     &larr; Повернутися до каталогу
 </a>
-{% endblock %}
+{% endblock %}

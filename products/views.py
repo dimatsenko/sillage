@@ -4,10 +4,13 @@ Views for the Products & Catalog module.
 Uses class-based views for consistency and extensibility.
 All heavy logic is delegated to ``services.py``.
 """
+from django.db.models import Max, Q
+from django.http import JsonResponse
 from django.views.generic import DetailView, ListView
 
 from .models import Category, Product
 from .services import filter_products, get_base_queryset, search_products
+from orders.forms import CartAddProductForm
 
 
 class ProductListView(ListView):
@@ -66,6 +69,8 @@ class ProductListView(ListView):
             'gender': self.request.GET.get('gender', ''),
             'fragrance_group': self.request.GET.get('fragrance_group', ''),
         }
+        context['max_db_price'] = Product.objects.aggregate(Max('price'))['price__max'] or 0
+        context['cart_product_form'] = CartAddProductForm()
         return context
 
 
@@ -79,3 +84,31 @@ class ProductDetailView(DetailView):
     def get_queryset(self):
         """Use select_related to avoid extra queries on the detail page."""
         return get_base_queryset()
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['cart_product_form'] = CartAddProductForm()
+        return context
+
+
+from django.db.models import Q
+
+def search_api(request):
+    query = request.GET.get('q', '').strip()
+    if len(query) < 2:
+        return JsonResponse({'results': []})
+
+    products = Product.objects.filter(
+        Q(name__icontains=query) | Q(brand__icontains=query)
+    )[:10]
+
+    results = []
+    for p in products:
+        results.append({
+            'name': p.name,
+            'brand': p.brand,
+            'url': p.get_absolute_url(),
+            'image': p.image.url if p.image else None
+        })
+
+    return JsonResponse({'results': results})

@@ -11,11 +11,12 @@ class CartAddProductForm(forms.Form):
     """
     Форма для додавання товару в кошик та оновлення його кількості.
     """
-    quantity = forms.TypedChoiceField(
-        choices=PRODUCT_QUANTITY_CHOICES,
-        coerce=int,
+    quantity = forms.IntegerField(
+        min_value=1,
+        max_value=21,
+        initial=1,
         label=_("Кількість"),
-        help_text=_("Оберіть кількість товару для додавання.")
+        widget=forms.NumberInput(attrs={'class': 'quantity-spinner'})
     )
     override = forms.BooleanField(
         required=False,

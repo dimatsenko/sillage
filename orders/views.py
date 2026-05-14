@@ -2,6 +2,7 @@ from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.decorators.http import require_POST
 
+from django.contrib import messages
 from products.models import Product
 from .cart import Cart
 from .forms import CartAddProductForm, OrderCreateForm
@@ -12,10 +13,6 @@ from .models import OrderItem
 def cart_add(request: HttpRequest, product_id: int) -> HttpResponseRedirect:
     """
     Додає товар до кошика або оновлює його кількість на основі даних з форми.
-
-    :param request: Об'єкт HttpRequest.
-    :param product_id: Ідентифікатор товару (Product).
-    :return: HttpResponseRedirect: Перенаправлення на сторінку детального перегляду кошика.
     """
     cart = Cart(request)
     product = get_object_or_404(Product, id=product_id)
@@ -28,8 +25,12 @@ def cart_add(request: HttpRequest, product_id: int) -> HttpResponseRedirect:
             quantity=cd['quantity'],
             override_quantity=cd['override']
         )
+        messages.success(request, f'Товар "{product.name}" успішно додано до кошика!')
+    else:
+        messages.error(request, 'Помилка при додаванні товару до кошика.')
     
-    return redirect('orders:cart_detail')
+    # Повертаємо користувача на ту ж сторінку, де він був
+    return redirect(request.META.get('HTTP_REFERER', 'products:list'))
 
 
 @require_POST

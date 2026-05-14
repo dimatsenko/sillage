@@ -66,13 +66,13 @@ def filter_products(
     if fragrance_group:
         queryset = queryset.filter(fragrance_group=fragrance_group)
 
-    if min_price is not None:
+    if min_price:
         try:
             queryset = queryset.filter(price__gte=Decimal(min_price))
         except (InvalidOperation, ValueError):
             pass  # ignore invalid input
 
-    if max_price is not None:
+    if max_price:
         try:
             queryset = queryset.filter(price__lte=Decimal(max_price))
         except (InvalidOperation, ValueError):

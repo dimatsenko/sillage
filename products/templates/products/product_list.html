@@ -302,11 +302,54 @@
         border-color: var(--clr-primary);
     }
 
+    /* Breadcrumbs */
+    .breadcrumbs {
+        display: flex;
+        align-items: center;
+        gap: .5rem;
+        font-size: .85rem;
+        color: var(--clr-text-muted);
+        margin-bottom: 1.5rem;
+    }
+
+    .breadcrumbs a {
+        color: var(--clr-text-muted);
+    }
+
+    .breadcrumbs a:hover {
+        color: var(--clr-primary);
+    }
+
+    .breadcrumbs span {
+        opacity: .5;
+    }
+
     /* Product Grid */
     .product-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-        gap: 1.5rem;
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        gap: 2rem;
+    }
+
+    @media (max-width: 900px) {
+        .catalog-layout {
+            grid-template-columns: 1fr;
+        }
+        
+        .filters-sidebar {
+            display: none; /* Hide sidebar on mobile, can add a toggle later */
+        }
+    }
+
+    .quantity-spinner {
+        width: 60px;
+        padding: .4rem;
+        border: 1px solid var(--clr-border);
+        border-radius: var(--radius);
+        background: var(--clr-bg);
+        font-family: var(--font);
+        font-size: .9rem;
+        text-align: center;
     }
 
     .product-card {
@@ -379,6 +422,37 @@
         font-size: 1.25rem;
         font-weight: 700;
         color: var(--clr-primary);
+        margin-bottom: 1rem;
+    }
+
+    .btn-add-cart {
+        width: 100%;
+        padding: .6rem;
+        background: var(--clr-primary);
+        color: var(--clr-bg);
+        border: none;
+        border-radius: var(--radius);
+        font-family: var(--font);
+        font-size: .85rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background var(--transition);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: .5rem;
+    }
+
+    .btn-add-cart:hover {
+        background: var(--clr-primary-dim);
+    }
+
+    .btn-add-cart svg {
+        width: 16px;
+        height: 16px;
+        fill: none;
+        stroke: currentColor;
+        stroke-width: 2;
     }
 
     /* Pagination */
@@ -423,78 +497,64 @@
 {% endblock %}
 
 {% block content %}
-<!-- Form wraps both sidebar and main content so sorting and filters submit together -->
-<form method="get" id="filter-form" class="catalog-layout">
+<nav class="breadcrumbs" aria-label="Breadcrumb">
+    <a href="{% url 'core-home' %}">Головна</a>
+    <span>/</span>
+    <a href="{% url 'products:list' %}">Каталог</a>
+</nav>
+
+<!-- Sidebar and Header Forms -->
+<div class="catalog-layout">
     
     <!-- Sidebar Filters (Left) -->
     <aside class="filters-sidebar">
-        {% if request.GET.search %}
-            <input type="hidden" name="search" value="{{ request.GET.search }}">
-        {% endif %}
+        <form method="get" id="filter-form">
+            {% if request.GET.search %}
+                <input type="hidden" name="search" value="{{ request.GET.search }}">
+            {% endif %}
+            {% if request.GET.sort %}
+                <input type="hidden" name="sort" value="{{ request.GET.sort }}">
+            {% endif %}
 
-        <!-- Brand Filter (Checkbox list) -->
-        {% if available_brands %}
-        <div class="filter-group">
-            <div class="filter-title">Бренд</div>
-            <div class="checkbox-list">
-                {% for b in available_brands %}
-                <label class="checkbox-item">
-                    <input type="checkbox" name="brand" value="{{ b }}" {% if b in current_filters.brands %}checked{% endif %}>
-                    {{ b }}
-                </label>
-                {% endfor %}
+            <!-- Brand Filter -->
+            {% if available_brands %}
+            <div class="filter-group">
+                <div class="filter-title">Бренд</div>
+                <div class="checkbox-list">
+                    {% for b in available_brands %}
+                    <label class="checkbox-item">
+                        <input type="checkbox" name="brand" value="{{ b }}" {% if b in current_filters.brands %}checked{% endif %}>
+                        {{ b }}
+                    </label>
+                    {% endfor %}
+                </div>
             </div>
-        </div>
-        {% endif %}
+            {% endif %}
 
-        <!-- Price Filter -->
-        <div class="filter-group">
-            <div class="filter-title">Ціна (₴)</div>
-            <div class="input-row">
-                <input type="number" name="min_price" class="filter-input" placeholder="Від" value="{{ current_filters.min_price }}">
-                <span style="color: var(--clr-text-muted);">-</span>
-                <input type="number" name="max_price" class="filter-input" placeholder="До" value="{{ current_filters.max_price }}">
+            <!-- Price Filter -->
+            <div class="filter-group">
+                <div class="filter-title">Ціна (₴)</div>
+                <div class="input-row">
+                    <input type="number" name="min_price" class="filter-input" placeholder="Від" min="0" max="{{ max_db_price }}" value="{{ current_filters.min_price }}">
+                    <span style="color: var(--clr-text-muted);">-</span>
+                    <input type="number" name="max_price" class="filter-input" placeholder="До {{ max_db_price|floatformat:0 }}" min="0" max="{{ max_db_price }}" value="{{ current_filters.max_price }}">
+                </div>
             </div>
-        </div>
 
-        <!-- Gender Filter -->
-        <div class="filter-group">
-            <div class="filter-title">Стать</div>
-            <select name="gender" class="filter-input" style="-webkit-appearance: none; appearance: none; background-image: url('data:image/svg+xml;charset=UTF-8,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'black\' stroke-width=\'2\' stroke-linecap=\'round\' stroke-linejoin=\'round\'%3E%3Cpolyline points=\'6 9 12 15 18 9\'%3E%3C/polyline%3E%3C/svg%3E'); background-repeat: no-repeat; background-position: right 0.7rem center; background-size: 14px;">
-                <option value="">Усі</option>
-                <option value="M" {% if current_filters.gender == 'M' %}selected{% endif %}>Чоловічі</option>
-                <option value="F" {% if current_filters.gender == 'F' %}selected{% endif %}>Жіночі</option>
-                <option value="U" {% if current_filters.gender == 'U' %}selected{% endif %}>Унісекс</option>
-            </select>
-        </div>
+            <!-- Gender Filter -->
+            <div class="filter-group">
+                <div class="filter-title">Стать</div>
+                <select name="gender" class="filter-input">
+                    <option value="">Усі</option>
+                    <option value="M" {% if current_filters.gender == 'M' %}selected{% endif %}>Чоловічі</option>
+                    <option value="F" {% if current_filters.gender == 'F' %}selected{% endif %}>Жіночі</option>
+                    <option value="U" {% if current_filters.gender == 'U' %}selected{% endif %}>Унісекс</option>
+                </select>
+            </div>
 
-        <!-- Fragrance Group Filter -->
-        {% if available_fragrance_groups %}
-        <div class="filter-group">
-            <div class="filter-title">Група ароматів</div>
-            <select name="fragrance_group" class="filter-input" style="-webkit-appearance: none; appearance: none; background-image: url('data:image/svg+xml;charset=UTF-8,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'black\' stroke-width=\'2\' stroke-linecap=\'round\' stroke-linejoin=\'round\'%3E%3Cpolyline points=\'6 9 12 15 18 9\'%3E%3C/polyline%3E%3C/svg%3E'); background-repeat: no-repeat; background-position: right 0.7rem center; background-size: 14px;">
-                <option value="">Усі групи</option>
-                {% for group in available_fragrance_groups %}
-                <option value="{{ group }}" {% if current_filters.fragrance_group == group %}selected{% endif %}>{{ group }}</option>
-                {% endfor %}
-            </select>
-        </div>
-        {% endif %}
-
-        <!-- Volume Filter -->
-        <div class="filter-group">
-            <div class="filter-title">Об'єм</div>
-            <select name="volume" class="filter-input" style="-webkit-appearance: none; appearance: none; background-image: url('data:image/svg+xml;charset=UTF-8,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'black\' stroke-width=\'2\' stroke-linecap=\'round\' stroke-linejoin=\'round\'%3E%3Cpolyline points=\'6 9 12 15 18 9\'%3E%3C/polyline%3E%3C/svg%3E'); background-repeat: no-repeat; background-position: right 0.7rem center; background-size: 14px;">
-                <option value="">Усі об'єми</option>
-                <option value="15" {% if current_filters.volume == '15' %}selected{% endif %}>15 мл</option>
-                <option value="30" {% if current_filters.volume == '30' %}selected{% endif %}>30 мл</option>
-                <option value="75" {% if current_filters.volume == '75' %}selected{% endif %}>75 мл</option>
-                <option value="100" {% if current_filters.volume == '100' %}selected{% endif %}>100 мл</option>
-            </select>
-        </div>
-
-        <button type="submit" class="btn-apply">Застосувати</button>
-        <a href="{% url 'products:list' %}" class="btn-reset">Скинути всі фільтри</a>
+            <button type="submit" class="btn-apply">Застосувати</button>
+            <a href="{% url 'products:list' %}" class="btn-reset">Скинути все</a>
+        </form>
     </aside>
 
     <!-- Main Content (Right) -->
@@ -502,16 +562,32 @@
         
         <!-- Header with Sorting -->
         <div class="content-header">
-            <h1 class="content-title">Каталог</h1>
+            <h1 class="content-title">
+                {% if request.GET.search %}
+                    Пошук: "{{ request.GET.search }}"
+                {% else %}
+                    Каталог
+                {% endif %}
+            </h1>
             
             <div class="sort-wrapper">
                 <label for="sort-select">Сортування:</label>
-                <select name="sort" id="sort-select" class="sort-select" onchange="this.form.submit()">
-                    <option value="" {% if not request.GET.sort %}selected{% endif %}>За замовчуванням</option>
-                    <option value="price_asc" {% if request.GET.sort == 'price_asc' %}selected{% endif %}>Дешевші</option>
-                    <option value="price_desc" {% if request.GET.sort == 'price_desc' %}selected{% endif %}>Дорожчі</option>
-                    <option value="popular" {% if request.GET.sort == 'popular' %}selected{% endif %}>Популярні</option>
-                </select>
+                <form method="get" style="display:inline;">
+                    <!-- Preserve existing filters when sorting -->
+                    {% if request.GET.search %}<input type="hidden" name="search" value="{{ request.GET.search }}">{% endif %}
+                    {% for b in current_filters.brands %}<input type="hidden" name="brand" value="{{ b }}">{% endfor %}
+                    {% if current_filters.min_price %}<input type="hidden" name="min_price" value="{{ current_filters.min_price }}">{% endif %}
+                    {% if current_filters.max_price %}<input type="hidden" name="max_price" value="{{ current_filters.max_price }}">{% endif %}
+                    {% if current_filters.gender %}<input type="hidden" name="gender" value="{{ current_filters.gender }}">{% endif %}
+                    {% if current_filters.fragrance_group %}<input type="hidden" name="fragrance_group" value="{{ current_filters.fragrance_group }}">{% endif %}
+
+                    <select name="sort" id="sort-select" class="sort-select" onchange="this.form.submit()">
+                        <option value="" {% if not request.GET.sort %}selected{% endif %}>За замовчуванням</option>
+                        <option value="price_asc" {% if request.GET.sort == 'price_asc' %}selected{% endif %}>Дешевші</option>
+                        <option value="price_desc" {% if request.GET.sort == 'price_desc' %}selected{% endif %}>Дорожчі</option>
+                        <option value="popular" {% if request.GET.sort == 'popular' %}selected{% endif %}>Популярні</option>
+                    </select>
+                </form>
             </div>
         </div>
 
@@ -536,6 +612,15 @@
                     </h2>
                     <p class="meta">{{ product.category.name|default:"Розпив" }} · {{ product.volume }}&nbsp;мл</p>
                     <p class="price">{{ product.price }}&nbsp;грн</p>
+                    
+                    <form action="{% url 'orders:cart_add' product.id %}" method="post">
+                        {% csrf_token %}
+                        <input type="hidden" name="quantity" value="1">
+                        <button type="submit" class="btn-add-cart">
+                            <svg viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4H6z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+                            У кошик
+                        </button>
+                    </form>
                 </article>
                 {% endfor %}
             </div>
@@ -563,8 +648,7 @@
             </div>
         {% endif %}
     </main>
-
-</form>
+</div>
 {% endblock %}
 
 {% block extra_js %}

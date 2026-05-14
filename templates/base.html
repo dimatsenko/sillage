@@ -94,9 +94,9 @@
         }
 
         .container {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
-            padding: 2rem 1.5rem;
+            padding: 2.5rem 2rem;
             flex: 1;
             width: 100%;
         }
@@ -170,8 +170,91 @@
         .search-overlay__backdrop {
             position: absolute;
             inset: 0;
-            background: rgba(42, 37, 41, .5);
+            background: transparent;
             cursor: pointer;
+        }
+
+        /* Live Search Results */
+        .search-results-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .search-result-item {
+            padding: .75rem 1rem;
+            border-bottom: 1px solid var(--clr-border);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            transition: background var(--transition);
+        }
+
+        .search-result-item:hover {
+            background: var(--clr-surface-hover);
+        }
+
+        .search-result-item img {
+            width: 40px;
+            height: 40px;
+            object-fit: cover;
+            border-radius: 4px;
+            background: var(--clr-bg);
+        }
+
+        .search-result-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .search-result-name {
+            font-size: .95rem;
+            font-weight: 600;
+            color: var(--clr-text);
+        }
+
+        .search-result-brand {
+            font-size: .8rem;
+            color: var(--clr-accent);
+            text-transform: uppercase;
+            letter-spacing: .05em;
+        }
+
+        .hidden-result {
+            display: none !important;
+        }
+
+        .show-more-results {
+            width: 100%;
+            padding: .75rem;
+            background: var(--clr-surface);
+            border: none;
+            border-top: 1px solid var(--clr-border);
+            color: var(--clr-accent);
+            font-family: var(--font);
+            font-size: .85rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: .5rem;
+            transition: background var(--transition);
+        }
+
+        .show-more-results:hover {
+            background: var(--clr-surface-hover);
+            color: var(--clr-primary);
+        }
+
+        .show-more-results svg {
+            width: 16px;
+            height: 16px;
+            transition: transform .3s ease;
+        }
+
+        .show-more-results.active svg {
+            transform: rotate(180deg);
         }
 
         .search-overlay__panel {
@@ -304,23 +387,51 @@
             color: var(--clr-bg);
         }
         
-        /* Message styling */
-        .messages-container {
-            margin-bottom: 2rem;
+        /* ── Toast Notifications ────── */
+        #toast-container {
+            position: fixed;
+            top: 100px;
+            right: 24px;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            pointer-events: none;
         }
-        .alert {
+
+        .toast {
+            background: var(--clr-primary);
+            color: var(--clr-bg);
             padding: 1rem 1.5rem;
             border-radius: var(--radius);
-            margin-bottom: 1rem;
-            border: 1px solid var(--clr-border);
-            background: var(--clr-surface);
+            box-shadow: 0 10px 30px rgba(42, 37, 41, 0.2);
+            font-size: 0.9rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            min-width: 280px;
+            max-width: 400px;
+            animation: slideIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            pointer-events: auto;
+            border-left: 4px solid var(--clr-accent);
         }
-        .alert-success {
-            border-left: 4px solid #27ae60;
+
+        .toast.success { border-left-color: #27ae60; }
+        .toast.error { border-left-color: var(--clr-danger); }
+
+        @keyframes slideIn {
+            from { transform: translateX(120%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
         }
-        .alert-error, .alert-danger {
-            border-left: 4px solid var(--clr-danger);
-            color: var(--clr-danger);
+
+        .toast.fade-out {
+            animation: fadeOut 0.4s ease forwards;
+        }
+
+        @keyframes fadeOut {
+            from { opacity: 1; transform: translateY(0); }
+            to { opacity: 0; transform: translateY(-10px); }
         }
     </style>
     {% block extra_css %}{% endblock %}
@@ -374,15 +485,18 @@
     </div>
 
     <main class="container">
-        {% if messages %}
-        <div class="messages-container">
-            {% for message in messages %}
-            <div class="alert alert-{{ message.tags }}">
-                {{ message }}
-            </div>
-            {% endfor %}
+        <div id="toast-container">
+            {% if messages %}
+                {% for message in messages %}
+                <div class="toast {{ message.tags }}">
+                    {% if message.tags == 'success' %}
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                    {% endif %}
+                    {{ message }}
+                </div>
+                {% endfor %}
+            {% endif %}
         </div>
-        {% endif %}
         
         {% block content %}{% endblock %}
     </main>
@@ -423,7 +537,68 @@
 
         if (input) {
             input.addEventListener('input', function() {
-                clearBtn.classList.toggle('visible', input.value.length > 0);
+                const query = input.value.trim();
+                clearBtn.classList.toggle('visible', query.length > 0);
+                
+                if (query.length < 2) {
+                    document.getElementById('search-results').innerHTML = '';
+                    return;
+                }
+
+                // Debounce search
+                clearTimeout(this.searchTimeout);
+                this.searchTimeout = setTimeout(() => {
+                    fetch(`/products/api/search/?q=${encodeURIComponent(query)}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            const resultsContainer = document.getElementById('search-results');
+                            if (data.results.length === 0) {
+                                resultsContainer.innerHTML = '<p style="padding: 1rem; color: var(--clr-text-muted);">Нічого не знайдено</p>';
+                                return;
+                            }
+
+                            let html = '<ul class="search-results-list">';
+                            data.results.forEach((item, index) => {
+                                const isHidden = index >= 3 ? 'hidden-result' : '';
+                                const imgHtml = item.image 
+                                    ? `<img src="${item.image}" alt="">`
+                                    : `<div style="width:40px; height:40px; background:var(--clr-border); border-radius:4px;"></div>`;
+                                
+                                html += `
+                                    <li class="${isHidden}">
+                                        <a href="${item.url}" class="search-result-item">
+                                            ${imgHtml}
+                                            <div class="search-result-info">
+                                                <span class="search-result-name">${item.name}</span>
+                                                <span class="search-result-brand">${item.brand}</span>
+                                            </div>
+                                        </a>
+                                    </li>
+                                `;
+                            });
+                            html += '</ul>';
+
+                            if (data.results.length > 3) {
+                                html += `
+                                    <button type="button" class="show-more-results" id="show-more-search">
+                                        Показати більше
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                                    </button>
+                                `;
+                            }
+
+                            resultsContainer.innerHTML = html;
+
+                            const showMoreBtn = document.getElementById('show-more-search');
+                            if (showMoreBtn) {
+                                showMoreBtn.addEventListener('click', function() {
+                                    const hiddenItems = resultsContainer.querySelectorAll('.hidden-result');
+                                    hiddenItems.forEach(item => item.classList.remove('hidden-result'));
+                                    showMoreBtn.remove();
+                                });
+                            }
+                        });
+                }, 300);
             });
         }
 
@@ -434,6 +609,15 @@
                 input.focus();
             });
         }
+
+        // Auto-hide toasts
+        const toasts = document.querySelectorAll('.toast');
+        toasts.forEach(toast => {
+            setTimeout(() => {
+                toast.classList.add('fade-out');
+                setTimeout(() => toast.remove(), 400);
+            }, 5000);
+        });
     })();
     </script>
 

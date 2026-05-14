@@ -32,12 +32,13 @@ class ProductAdmin(admin.ModelAdmin):
         'name',
         'brand',
         'category',
+        'gender',
+        'fragrance_group',
         'price',
         'volume',
-        'created_at',
-        'updated_at',
+        'image',
     )
-    list_filter = ('category', 'brand', 'volume')
+    list_filter = ('category', 'brand', 'gender', 'fragrance_group', 'volume')
     search_fields = ('name', 'brand', 'description')
     list_select_related = ('category',)
     readonly_fields = ('created_at', 'updated_at')
@@ -46,10 +47,10 @@ class ProductAdmin(admin.ModelAdmin):
 
     fieldsets = (
         ('Основна інформація', {
-            'fields': ('name', 'brand', 'category'),
+            'fields': ('name', 'brand', 'category', 'gender'),
         }),
         ('Характеристики', {
-            'fields': ('price', 'volume', 'description'),
+            'fields': ('price', 'volume', 'fragrance_group', 'image', 'description'),
         }),
         ('Службова інформація', {
             'fields': ('created_at', 'updated_at'),
