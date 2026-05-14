@@ -300,13 +300,26 @@
             position: relative;
         }
 
-        .search-overlay__form svg {
+        .search-overlay__submit {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .search-overlay__submit svg {
             width: 20px;
             height: 20px;
             stroke: var(--clr-text-muted);
             stroke-width: 2;
             fill: none;
-            flex-shrink: 0;
+        }
+
+        .search-overlay__submit:focus svg {
+            stroke: var(--clr-primary);
         }
 
         .search-overlay__input {
@@ -456,7 +469,9 @@
                     Закрити
                 </button>
                 <form class="search-overlay__form" id="search-form" method="get" action="{% url 'products:list' %}">
-                    <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                    <button type="submit" class="search-overlay__submit" aria-label="Шукати">
+                        <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                    </button>
                     <input type="text" name="search" class="search-overlay__input" id="search-input"
                            placeholder="Знайти аромат…" autocomplete="off">
                     <button type="button" class="search-overlay__clear" id="search-clear" aria-label="Очистити">
@@ -552,7 +567,7 @@
                                 
                                 html += `
                                     <li class="${isHidden}">
-                                        <a href="${item.url}" class="search-result-item">
+                                        <a href="/products/?search=${encodeURIComponent(item.name)}" class="search-result-item">
                                             ${imgHtml}
                                             <div class="search-result-info">
                                                 <span class="search-result-name">${item.name}</span>

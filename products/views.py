@@ -5,12 +5,25 @@ Uses class-based views for consistency and extensibility.
 All heavy logic is delegated to ``services.py``.
 """
 from django.db.models import Max, Min, Q
+from django.db.models import Max, Min, Q
 from django.http import JsonResponse
-from django.views.generic import DetailView, ListView
+from django.views.generic import DetailView, ListView, TemplateView
 
 from .models import Category, Product
 from .services import filter_products, get_base_queryset, search_products
 from orders.forms import CartAddProductForm
+
+
+class HomeView(TemplateView):
+    template_name = 'home.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # 4 найновіші товари
+        context['new_arrivals'] = Product.objects.order_by('-created_at')[:4]
+        # 4 бестселери (для демонстрації візьмемо за ціною або випадкові)
+        context['bestsellers'] = Product.objects.order_by('?')[:4]
+        return context
 
 
 class ProductListView(ListView):
