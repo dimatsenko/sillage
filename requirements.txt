@@ -5,3 +5,4 @@ pytest-django>=4.12,<5.0
 whitenoise>=6.0.0
 psycopg2-binary>=2.9
 dj-database-url>=2.0
+Pillow>=11.0
