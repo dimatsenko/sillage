@@ -60,12 +60,20 @@
         gap: 0.5rem;
     }
     
-    .quantity-form select {
+    .quantity-form input[type="number"] {
         padding: 0.6rem;
         font-size: 1rem;
         border: 1px solid #ccc;
         border-radius: var(--radius, 4px);
         cursor: pointer;
+        width: 80px;
+        -moz-appearance: textfield;
+    }
+
+    .quantity-form input[type="number"]::-webkit-outer-spin-button,
+    .quantity-form input[type="number"]::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
     }
 
     .btn-remove {
@@ -242,9 +250,9 @@
 
 <script>
     document.addEventListener("DOMContentLoaded", function() {
-        const selects = document.querySelectorAll(".quantity-form select");
-        selects.forEach(select => {
-            select.addEventListener("change", function() {
+        const inputs = document.querySelectorAll(".quantity-form input[type='number']");
+        inputs.forEach(input => {
+            input.addEventListener("change", function() {
                 this.form.submit();
             });
         });
