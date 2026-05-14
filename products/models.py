@@ -100,6 +100,12 @@ class Product(models.Model):
         default='U',
         verbose_name='Стать',
     )
+    image = models.ImageField(
+        upload_to='products/%Y/%m/%d/',
+        blank=True,
+        null=True,
+        verbose_name='Фотографія',
+    )
     fragrance_group = models.CharField(
         max_length=100,
         blank=True,

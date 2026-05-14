@@ -25,9 +25,44 @@
         background: var(--clr-surface);
         border: 1px solid var(--clr-border);
         border-radius: var(--radius);
-        padding: 2rem 2.5rem;
-        max-width: 720px;
+        padding: 2.5rem;
+        max-width: 900px;
         box-shadow: var(--shadow);
+    }
+
+    .detail-layout {
+        display: grid;
+        grid-template-columns: 300px 1fr;
+        gap: 2.5rem;
+        align-items: start;
+    }
+
+    @media (max-width: 700px) {
+        .detail-layout {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    .detail-image {
+        width: 100%;
+        aspect-ratio: 1 / 1;
+        background: var(--clr-bg);
+        border-radius: var(--radius);
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .detail-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .detail-info {
+        display: flex;
+        flex-direction: column;
     }
 
     .detail-card .brand-label {
@@ -109,31 +144,43 @@
 </nav>
 
 <article class="detail-card" id="product-detail">
-    <p class="brand-label">{{ product.brand }}</p>
-    <h1>{{ product.name }}</h1>
+    <div class="detail-layout">
+        <div class="detail-image">
+            {% if product.image %}
+                <img src="{{ product.image.url }}" alt="{{ product.name }}">
+            {% else %}
+                <span style="color: var(--clr-text-muted); font-size: 0.9rem;">Фото відсутнє</span>
+            {% endif %}
+        </div>
+        
+        <div class="detail-info">
+            <p class="brand-label">{{ product.brand }}</p>
+            <h1>{{ product.name }}</h1>
 
-    <dl class="specs">
-        <dt>Категорія</dt>
-        <dd>{{ product.category.name }}</dd>
+            <dl class="specs">
+                <dt>Категорія</dt>
+                <dd>{{ product.category.name }}</dd>
 
-        <dt>Бренд</dt>
-        <dd>{{ product.brand }}</dd>
+                <dt>Бренд</dt>
+                <dd>{{ product.brand }}</dd>
 
-        <dt>Об'єм</dt>
-        <dd>{{ product.volume }}&nbsp;мл</dd>
-    </dl>
+                <dt>Об'єм</dt>
+                <dd>{{ product.volume }}&nbsp;мл</dd>
+            </dl>
 
-    <p class="price-tag" id="product-price">{{ product.price }}&nbsp;грн</p>
+            <p class="price-tag" id="product-price">{{ product.price }}&nbsp;грн</p>
 
-    {% if product.description %}
-    <div class="description" id="product-description">
-        {{ product.description }}
-    </div>
-    {% endif %}
+            {% if product.description %}
+            <div class="description" id="product-description">
+                {{ product.description }}
+            </div>
+            {% endif %}
 
-    <div class="timestamps">
-        Додано: {{ product.created_at|date:"d.m.Y H:i" }} ·
-        Оновлено: {{ product.updated_at|date:"d.m.Y H:i" }}
+            <div class="timestamps">
+                Додано: {{ product.created_at|date:"d.m.Y H:i" }} ·
+                Оновлено: {{ product.updated_at|date:"d.m.Y H:i" }}
+            </div>
+        </div>
     </div>
 </article>
 
