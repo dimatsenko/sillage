@@ -70,3 +70,21 @@ jobs:
       - name: Cleanup container
         if: always()
         run: docker rm -f sillage-ci || true
+
+  deploy:
+    name: Deploy to Heroku
+    runs-on: ubuntu-latest
+    needs: build-and-test
+    # Деплой лише якщо коміт відбувається у гілку main або master
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Deploy to Heroku
+        uses: akhileshns/heroku-deploy@v3.13.15
+        with:
+          heroku_api_key: ${{secrets.HEROKU_API_KEY}}
+          heroku_app_name: ${{secrets.HEROKU_APP_NAME}}
+          heroku_email: ${{secrets.HEROKU_EMAIL}}
