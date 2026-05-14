@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Редагування профілю | Sillage{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/auth.css' %}">
+<style>
+    .auth-container { max-width: 500px; margin-top: 4rem; }
+    .btn-group {
+        display: flex;
+        gap: 1rem;
+        margin-top: 2rem;
+    }
+    .btn-group .auth-btn {
+        flex: 1;
+        text-align: center;
+    }
+    .btn-cancel {
+        background: transparent;
+        border: 1px solid var(--clr-border);
+        color: var(--clr-text);
+    }
+    .btn-cancel:hover {
+        background: var(--clr-surface-hover);
+        border-color: var(--clr-primary);
+        color: var(--clr-primary);
+        transform: translateY(-2px);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+    <h2 class="auth-title">Налаштування профілю</h2>
+    <form method="POST" class="auth-form">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <div class="btn-group">
+            <a href="{% url 'users:profile' %}" class="auth-btn btn-cancel">Скасувати</a>
+            <button type="submit" class="auth-btn">Зберегти</button>
+        </div>
+    </form>
+</div>
+{% endblock %}

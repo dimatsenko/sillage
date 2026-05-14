@@ -1,0 +1,247 @@
+{% extends "base.html" %}
+
+{% block title %}Ваш кошик{% endblock %}
+
+{% block extra_css %}
+<style>
+    .cart-container {
+        max-width: 900px;
+        margin: 2rem auto;
+        background-color: var(--clr-surface, #ffffff);
+        padding: 2.5rem;
+        border-radius: var(--radius, 12px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04), 0 1px 3px rgba(0, 0, 0, 0.08);
+    }
+
+    .cart-header {
+        font-size: 1.8rem;
+        color: var(--clr-text, #333);
+        border-bottom: 2px solid var(--clr-primary, #000);
+        padding-bottom: 1rem;
+        margin-bottom: 2rem;
+        font-weight: 700;
+    }
+
+    .cart-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 2rem;
+    }
+
+    .cart-table th {
+        text-align: left;
+        color: #666;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid #e0e0e0;
+        font-weight: 600;
+    }
+
+    .cart-table td {
+        padding: 1.5rem 0;
+        border-bottom: 1px solid #f0f0f0;
+        vertical-align: middle;
+    }
+
+    .product-info strong {
+        display: block;
+        font-size: 1.1rem;
+        color: var(--clr-text, #333);
+        margin-bottom: 0.25rem;
+    }
+
+    .product-info span {
+        color: #777;
+        font-size: 0.9rem;
+    }
+
+    .quantity-form {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .quantity-form select {
+        padding: 0.4rem;
+        border: 1px solid #ccc;
+        border-radius: var(--radius, 4px);
+    }
+
+    .quantity-form button {
+        background-color: #f0f0f0;
+        border: none;
+        padding: 0.4rem 0.8rem;
+        border-radius: var(--radius, 4px);
+        cursor: pointer;
+        font-weight: 500;
+        transition: background-color 0.2s;
+    }
+
+    .quantity-form button:hover {
+        background-color: #e0e0e0;
+    }
+
+    .btn-remove {
+        background-color: #fee2e2;
+        color: #ad4343;
+        border: none;
+        padding: 0.5rem 1rem;
+        border-radius: var(--radius, 4px);
+        cursor: pointer;
+        transition: background-color 0.2s;
+        font-weight: 500;
+    }
+
+    .btn-remove:hover {
+        background-color: #fecaca;
+    }
+
+    .cart-total-row {
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin-top: 1rem;
+        padding-top: 1rem;
+    }
+
+    .cart-total-row span {
+        margin-left: 1.5rem;
+    }
+
+    .cart-actions {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 3rem;
+        border-top: 1px solid #e0e0e0;
+        padding-top: 2rem;
+    }
+
+    .btn-secondary {
+        background-color: #f5f5f5;
+        color: #333;
+        padding: 1rem 1.5rem;
+        border-radius: var(--radius, 6px);
+        text-decoration: none;
+        font-weight: 600;
+        transition: background-color 0.2s;
+    }
+
+    .btn-secondary:hover {
+        background-color: #e5e5e5;
+    }
+
+    .btn-primary {
+        background-color: var(--clr-primary, #000);
+        color: #fff;
+        padding: 1rem 2rem;
+        border-radius: var(--radius, 6px);
+        text-decoration: none;
+        font-weight: 600;
+        transition: opacity 0.2s, transform 0.2s;
+    }
+
+    .btn-primary:hover {
+        opacity: 0.9;
+        transform: translateY(-2px);
+    }
+    
+    @media (max-width: 600px) {
+        .cart-actions {
+            flex-direction: column;
+            gap: 1rem;
+            text-align: center;
+        }
+        .cart-table th {
+            display: none;
+        }
+        .cart-table td {
+            display: block;
+            text-align: right;
+            padding: 0.5rem 0;
+            border-bottom: none;
+        }
+        .cart-table td::before {
+            content: attr(data-label);
+            float: left;
+            font-weight: bold;
+            color: #666;
+        }
+        .cart-table tr {
+            display: block;
+            border-bottom: 2px solid #f0f0f0;
+            padding-bottom: 1rem;
+            margin-bottom: 1rem;
+        }
+        .product-info {
+            text-align: left;
+            padding-bottom: 0.5rem;
+        }
+        .quantity-form {
+            justify-content: flex-end;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="cart-container">
+    <h1 class="cart-header">Ваш кошик</h1>
+
+    {% if cart|length > 0 %}
+        <table class="cart-table">
+            <thead>
+                <tr>
+                    <th>Товар</th>
+                    <th>Кількість</th>
+                    <th>Ціна за од.</th>
+                    <th>Всього</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in cart %}
+                <tr>
+                    <td data-label="Товар">
+                        <div class="product-info">
+                            <strong>{{ item.product.brand }} — {{ item.product.name }}</strong>
+                            <span>Об'єм: {{ item.product.volume }} мл</span>
+                        </div>
+                    </td>
+                    <td data-label="Кількість">
+                        <form action="{% url 'orders:cart_add' item.product.id %}" method="post" class="quantity-form">
+                            {% csrf_token %}
+                            {{ item.update_quantity_form.quantity }}
+                            {{ item.update_quantity_form.override }}
+                            <button type="submit">Оновити</button>
+                        </form>
+                    </td>
+                    <td data-label="Ціна за од.">{{ item.price }} грн</td>
+                    <td data-label="Всього">{{ item.total_price }} грн</td>
+                    <td data-label="">
+                        <form action="{% url 'orders:cart_remove' item.product.id %}" method="post">
+                            {% csrf_token %}
+                            <button type="submit" class="btn-remove">Видалити</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <div class="cart-total-row">
+            Разом: <span>{{ cart.get_total_price }} грн</span>
+        </div>
+
+        <div class="cart-actions">
+            <a href="{% url 'products:list' %}" class="btn-secondary">Продовжити покупки</a>
+            <a href="{% url 'orders:order_create' %}" class="btn-primary">Оформити замовлення</a>
+        </div>
+    {% else %}
+        <p style="text-align: center; color: #666; font-size: 1.1rem; padding: 2rem 0;">Ваш кошик наразі порожній.</p>
+        <div style="text-align: center;">
+            <a href="{% url 'products:list' %}" class="btn-primary">Перейти до каталогу</a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

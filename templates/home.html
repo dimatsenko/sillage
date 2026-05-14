@@ -1,0 +1,130 @@
+{% extends "base.html" %}
+
+{% block title %}Sillage — Головна{% endblock %}
+
+{% block extra_css %}
+<style>
+    .hero {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        padding: 5rem 2rem;
+        background: var(--clr-surface);
+        border: 1px solid var(--clr-border);
+        border-radius: var(--radius);
+        margin-top: 2rem;
+        box-shadow: var(--shadow);
+        background-image: radial-gradient(circle at top right, rgba(42,37,41,0.03), transparent 40%),
+                          radial-gradient(circle at bottom left, rgba(107,94,98,0.04), transparent 40%);
+    }
+
+    .hero-title {
+        font-size: 3rem;
+        font-weight: 700;
+        color: var(--clr-primary);
+        margin-bottom: 1.5rem;
+        letter-spacing: -0.02em;
+        line-height: 1.2;
+    }
+
+    .hero-subtitle {
+        font-size: 1.15rem;
+        color: var(--clr-text-muted);
+        max-width: 650px;
+        margin-bottom: 2.5rem;
+        line-height: 1.7;
+    }
+
+    .hero-btn {
+        display: inline-block;
+        padding: 1rem 2.5rem;
+        background: var(--clr-primary);
+        color: var(--clr-bg);
+        font-weight: 600;
+        font-size: 1.1rem;
+        border-radius: var(--radius);
+        transition: transform 0.2s, background 0.2s, box-shadow 0.2s;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+
+    .hero-btn:hover {
+        background: var(--clr-primary-dim);
+        transform: translateY(-2px);
+        color: var(--clr-bg);
+        box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+    }
+    
+    .features-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 2rem;
+        margin-top: 4rem;
+    }
+    
+    .feature-card {
+        background: var(--clr-surface);
+        border: 1px solid var(--clr-border);
+        padding: 2.5rem 2rem;
+        border-radius: var(--radius);
+        text-align: center;
+        transition: transform var(--transition), box-shadow var(--transition);
+    }
+    
+    .feature-card:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--shadow-hover);
+    }
+    
+    .feature-card svg {
+        width: 48px;
+        height: 48px;
+        stroke: var(--clr-accent);
+        stroke-width: 1.5;
+        fill: none;
+        margin-bottom: 1.5rem;
+    }
+    
+    .feature-card h3 {
+        font-size: 1.25rem;
+        margin-bottom: 0.75rem;
+        color: var(--clr-primary);
+    }
+    
+    .feature-card p {
+        color: var(--clr-text-muted);
+        font-size: 0.95rem;
+        line-height: 1.6;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="hero">
+    <h1 class="hero-title">Мистецтво нішевої парфумерії</h1>
+    <p class="hero-subtitle">
+        Sillage пропонує ексклюзивні аромати від світових парфумерних домів у форматі розпиву. 
+        Знайдіть свій ідеальний парфум, купуючи лише ту кількість, яка вам потрібна.
+    </p>
+    <a href="{% url 'products:list' %}" class="hero-btn">Перейти до каталогу</a>
+</section>
+
+<section class="features-grid">
+    <div class="feature-card">
+        <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        <h3>100% Оригінал</h3>
+        <p>Ми гарантуємо автентичність усіх парфумів. Працюємо лише з офіційними дистриб'юторами та перевіреними постачальниками.</p>
+    </div>
+    <div class="feature-card">
+        <svg viewBox="0 0 24 24"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+        <h3>Доступні ціни</h3>
+        <p>Формат розпиву дозволяє спробувати розкішні нішеві аромати без необхідності купувати дорогий повнорозмірний флакон.</p>
+    </div>
+    <div class="feature-card">
+        <svg viewBox="0 0 24 24"><rect x="3" y="8" width="18" height="12" rx="2" ry="2"/><path d="M16 8V6a2 2 0 0 0-2-2H10a2 2 0 0 0-2 2v2"/><path d="M8 8v12"/><path d="M16 8v12"/></svg>
+        <h3>Естетичне пакування</h3>
+        <p>Кожен декант оформлюється з любов'ю та увагою до деталей. Ідеально підходить як для себе, так і на подарунок.</p>
+    </div>
+</section>
+{% endblock %}
