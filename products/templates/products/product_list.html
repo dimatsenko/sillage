@@ -323,50 +323,60 @@
         opacity: .5;
     }
 
-    /* Product Grid */
-    .product-grid {
+    /* Layout */
+    .catalog-layout {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-        gap: 2rem;
+        grid-template-columns: 260px 1fr; /* Left sidebar */
+        gap: 0; /* Remove gap to let border-right be the divider */
+        align-items: stretch;
+        margin-top: 2rem;
+        min-height: 80vh;
     }
 
     @media (max-width: 900px) {
         .catalog-layout {
             grid-template-columns: 1fr;
-        }
-        
-        .filters-sidebar {
-            display: none; /* Hide sidebar on mobile, can add a toggle later */
+            min-height: auto;
         }
     }
 
-    .quantity-spinner {
-        width: 60px;
-        padding: .4rem;
-        border: 1px solid var(--clr-border);
-        border-radius: var(--radius);
-        background: var(--clr-bg);
-        font-family: var(--font);
-        font-size: .9rem;
-        text-align: center;
+    /* Sidebar Filters (Minimalist) */
+    .filters-sidebar {
+        background: transparent;
+        padding: 0 2.5rem 0 0;
+        border: none;
+        border-right: 1px solid var(--clr-border);
+    }
+
+    .catalog-main {
+        padding-left: 2.5rem;
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+
+    /* Product Grid */
+    .product-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+        gap: 2rem;
     }
 
     .product-card {
         background: var(--clr-surface);
         border: 1px solid var(--clr-border);
-        border-radius: var(--radius);
-        padding: 1rem;
+        border-radius: 0;
+        padding: 0; /* Edge to edge */
         display: flex;
         flex-direction: column;
+        overflow: hidden;
     }
 
     .product-img-wrapper {
         width: 100%;
         aspect-ratio: 1 / 1;
-        background: var(--clr-bg);
-        border-radius: calc(var(--radius) - 4px);
+        background: #f9f9f9;
         overflow: hidden;
-        margin-bottom: 1rem;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -376,6 +386,22 @@
         width: 100%;
         height: 100%;
         object-fit: cover;
+    }
+
+    .product-card-content {
+        padding: 1.25rem;
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+    }
+
+    .product-card .brand {
+        font-size: .75rem;
+        color: var(--clr-accent);
+        text-transform: uppercase;
+        letter-spacing: .08em;
+        font-weight: 500;
+        margin-bottom: .25rem;
     }
 
     .product-img-placeholder {
@@ -599,21 +625,23 @@
                             <div class="product-img-placeholder">Фото відсутнє</div>
                         {% endif %}
                     </a>
-                    <span class="brand">{{ product.brand }}</span>
-                    <h2 class="name">
-                        <a href="{{ product.get_absolute_url }}">{{ product.name }}</a>
-                    </h2>
-                    <p class="meta">{{ product.category.name|default:"Розпив" }} · {{ product.volume }}&nbsp;мл</p>
-                    <p class="price">{{ product.price }}&nbsp;грн</p>
-                    
-                    <form action="{% url 'orders:cart_add' product.id %}" method="post">
-                        {% csrf_token %}
-                        <input type="hidden" name="quantity" value="1">
-                        <button type="submit" class="btn-add-cart">
-                            <svg viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4H6z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 01-8 0"/></svg>
-                            У кошик
-                        </button>
-                    </form>
+                    <div class="product-card-content">
+                        <span class="brand">{{ product.brand }}</span>
+                        <h2 class="name">
+                            <a href="{{ product.get_absolute_url }}">{{ product.name }}</a>
+                        </h2>
+                        <p class="meta">{{ product.category.name|default:"Розпив" }} · {{ product.volume }}&nbsp;мл</p>
+                        <p class="price">{{ product.price }}&nbsp;грн</p>
+                        
+                        <form action="{% url 'orders:cart_add' product.id %}" method="post">
+                            {% csrf_token %}
+                            <input type="hidden" name="quantity" value="1">
+                            <button type="submit" class="btn-add-cart">
+                                <svg viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4H6z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+                                У кошик
+                            </button>
+                        </form>
+                    </div>
                 </article>
                 {% endfor %}
             </div>

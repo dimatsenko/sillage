@@ -4,12 +4,14 @@ from django.views.generic import TemplateView
 from django.conf import settings
 from django.conf.urls.static import static
 
+from products.views import HomeView
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('users/', include('users.urls')),
     path('products/', include('products.urls')),
     path('orders/', include('orders.urls')),
-    path('', TemplateView.as_view(template_name='home.html'), name='core-home'),
+    path('', HomeView.as_view(), name='core-home'),
 ]
 
 if settings.DEBUG:
