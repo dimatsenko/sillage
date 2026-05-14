@@ -12,12 +12,15 @@ from django.contrib.auth import get_user_model
 
 User = get_user_model()
 
-username = os.environ.get('DJANGO_SU_NAME', 'admin')
-email = os.environ.get('DJANGO_SU_EMAIL', 'admin@example.com')
-password = os.environ.get('DJANGO_SU_PASSWORD', 'admin')
+username = os.environ.get('DJANGO_SU_NAME')
+email = os.environ.get('DJANGO_SU_EMAIL')
+password = os.environ.get('DJANGO_SU_PASSWORD')
 
-if not User.objects.filter(username=username).exists():
-    User.objects.create_superuser(username=username, email=email, password=password)
-    print(f'Superuser "{username}" created.')
+if username and email and password:
+    if not User.objects.filter(username=username).exists():
+        User.objects.create_superuser(username=username, email=email, password=password)
+        print(f'Superuser "{username}" created.')
+    else:
+        print(f'Superuser "{username}" already exists, skipping.')
 else:
-    print(f'Superuser "{username}" already exists, skipping.')
+    print('Superuser credentials not provided in environment variables. Skipping creation.')
