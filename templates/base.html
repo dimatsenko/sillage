@@ -403,7 +403,6 @@
             color: var(--clr-bg);
             padding: 1rem 1.5rem;
             border-radius: var(--radius);
-            box-shadow: 0 10px 30px rgba(42, 37, 41, 0.2);
             font-size: 0.9rem;
             font-weight: 600;
             display: flex;
@@ -413,11 +412,7 @@
             max-width: 400px;
             animation: slideIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
             pointer-events: auto;
-            border-left: 4px solid var(--clr-accent);
         }
-
-        .toast.success { border-left-color: #27ae60; }
-        .toast.error { border-left-color: var(--clr-danger); }
 
         @keyframes slideIn {
             from { transform: translateX(120%); opacity: 0; }

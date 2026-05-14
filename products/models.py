@@ -57,11 +57,10 @@ class Product(models.Model):
         updated_at      — auto-set on every save.
     """
 
-    GENDER_CHOICES = [
-        ('M', 'Чоловічі'),
-        ('F', 'Жіночі'),
-        ('U', 'Унісекс'),
-    ]
+    class Gender(models.TextChoices):
+        MALE = 'M', 'Чоловічі'
+        FEMALE = 'F', 'Жіночі'
+        UNISEX = 'U', 'Унісекс'
 
     name = models.CharField(
         max_length=255,
@@ -96,8 +95,8 @@ class Product(models.Model):
     )
     gender = models.CharField(
         max_length=1,
-        choices=GENDER_CHOICES,
-        default='U',
+        choices=Gender.choices,
+        default=Gender.UNISEX,
         verbose_name='Стать',
     )
     image = models.ImageField(
