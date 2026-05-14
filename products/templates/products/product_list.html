@@ -20,12 +20,13 @@
         }
     }
 
-    /* Sidebar Filters */
+    /* Sidebar Filters (Minimalist) */
     .filters-sidebar {
-        background: var(--clr-surface);
-        padding: 1.5rem;
-        border: 1px solid var(--clr-border);
-        border-radius: var(--radius);
+        background: transparent;
+        padding: 0;
+        border: none;
+        border-right: 1px solid var(--clr-border);
+        padding-right: 2rem;
     }
 
     .catalog-search:focus-within {
@@ -199,11 +200,9 @@
         cursor: pointer;
     }
 
-    /* Inputs (Price, Volume) */
-    .input-row {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
+    .input-row .filter-input {
+        flex: 1;
+        min-width: 95px; /* Prevent clipping */
     }
 
     .filter-input {
@@ -357,14 +356,8 @@
         border: 1px solid var(--clr-border);
         border-radius: var(--radius);
         padding: 1rem;
-        transition: transform var(--transition), box-shadow var(--transition);
         display: flex;
         flex-direction: column;
-    }
-
-    .product-card:hover {
-        transform: translateY(-4px);
-        box-shadow: var(--shadow-hover);
     }
 
     .product-img-wrapper {
@@ -436,15 +429,10 @@
         font-size: .85rem;
         font-weight: 600;
         cursor: pointer;
-        transition: background var(--transition);
         display: flex;
         align-items: center;
         justify-content: center;
         gap: .5rem;
-    }
-
-    .btn-add-cart:hover {
-        background: var(--clr-primary-dim);
     }
 
     .btn-add-cart svg {
@@ -535,9 +523,15 @@
             <div class="filter-group">
                 <div class="filter-title">Ціна (₴)</div>
                 <div class="input-row">
-                    <input type="number" name="min_price" class="filter-input" placeholder="Від" min="0" max="{{ max_db_price }}" value="{{ current_filters.min_price }}">
+                    <input type="number" name="min_price" class="filter-input" 
+                           placeholder="Від {{ min_db_price }}" 
+                           min="{{ min_db_price }}" max="{{ max_db_price }}" 
+                           value="{{ current_filters.min_price }}">
                     <span style="color: var(--clr-text-muted);">-</span>
-                    <input type="number" name="max_price" class="filter-input" placeholder="До {{ max_db_price|floatformat:0 }}" min="0" max="{{ max_db_price }}" value="{{ current_filters.max_price }}">
+                    <input type="number" name="max_price" class="filter-input" 
+                           placeholder="До {{ max_db_price }}" 
+                           min="{{ min_db_price }}" max="{{ max_db_price }}" 
+                           value="{{ current_filters.max_price }}">
                 </div>
             </div>
 
@@ -585,7 +579,6 @@
                         <option value="" {% if not request.GET.sort %}selected{% endif %}>За замовчуванням</option>
                         <option value="price_asc" {% if request.GET.sort == 'price_asc' %}selected{% endif %}>Дешевші</option>
                         <option value="price_desc" {% if request.GET.sort == 'price_desc' %}selected{% endif %}>Дорожчі</option>
-                        <option value="popular" {% if request.GET.sort == 'popular' %}selected{% endif %}>Популярні</option>
                     </select>
                 </form>
             </div>

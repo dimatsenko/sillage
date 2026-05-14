@@ -4,7 +4,7 @@ Views for the Products & Catalog module.
 Uses class-based views for consistency and extensibility.
 All heavy logic is delegated to ``services.py``.
 """
-from django.db.models import Max, Q
+from django.db.models import Max, Min, Q
 from django.http import JsonResponse
 from django.views.generic import DetailView, ListView
 
@@ -41,7 +41,7 @@ class ProductListView(ListView):
         else:
             queryset = get_base_queryset()
 
-        return filter_products(
+        queryset = filter_products(
             queryset,
             category_slug=params.get('category'),
             brands=params.getlist('brand'),
@@ -51,6 +51,17 @@ class ProductListView(ListView):
             gender=params.get('gender'),
             fragrance_group=params.get('fragrance_group'),
         )
+
+        # Sorting logic
+        sort = params.get('sort')
+        if sort == 'price_asc':
+            queryset = queryset.order_by('price')
+        elif sort == 'price_desc':
+            queryset = queryset.order_by('-price')
+        else:
+            queryset = queryset.order_by('-created_at')
+
+        return queryset
 
     def get_context_data(self, **kwargs):
         """Inject categories and active filters into template context."""
@@ -69,7 +80,11 @@ class ProductListView(ListView):
             'gender': self.request.GET.get('gender', ''),
             'fragrance_group': self.request.GET.get('fragrance_group', ''),
         }
-        context['max_db_price'] = Product.objects.aggregate(Max('price'))['price__max'] or 0
+        # Calculate price bounds for the filter
+        price_stats = Product.objects.aggregate(min_p=Min('price'), max_p=Max('price'))
+        context['min_db_price'] = int(price_stats['min_p'] or 0)
+        context['max_db_price'] = int(price_stats['max_p'] or 0)
+        
         context['cart_product_form'] = CartAddProductForm()
         return context
 
