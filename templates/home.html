@@ -1,0 +1,279 @@
+{% extends "base.html" %}
+
+{% block title %}Sillage — Мистецтво нішевої парфумерії{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Hero Banner */
+    .hero {
+        position: relative;
+        padding: 6rem 2rem;
+        background: var(--clr-primary);
+        color: #FFFFFF;
+        text-align: center;
+        margin: 2rem 0 4rem;
+        border-radius: 0;
+    }
+
+    .hero-title {
+        font-size: 3.5rem;
+        font-weight: 700;
+        margin-bottom: 1.5rem;
+        letter-spacing: -0.03em;
+        text-transform: uppercase;
+    }
+
+    .hero-subtitle {
+        font-size: 1.25rem;
+        max-width: 700px;
+        margin: 0 auto 3rem;
+        opacity: 0.8;
+        line-height: 1.6;
+    }
+
+    .hero-btn {
+        display: inline-block;
+        padding: 1.2rem 3rem;
+        background: #FFFFFF;
+        color: var(--clr-primary);
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        font-size: 0.9rem;
+    }
+
+    /* Sections */
+    .section {
+        margin-bottom: 6rem;
+    }
+
+    .section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        margin-bottom: 2.5rem;
+        border-bottom: 1px solid var(--clr-border);
+        padding-bottom: 1rem;
+    }
+
+    .section-title {
+        font-size: 1.8rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+
+    .section-link {
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: var(--clr-accent);
+        text-decoration: underline;
+    }
+
+    /* Product Grid (Static) */
+    .product-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 2rem;
+    }
+
+    .product-card {
+        background: var(--clr-surface);
+        border: 1px solid var(--clr-border);
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+    }
+
+    .product-img-wrapper {
+        width: 100%;
+        aspect-ratio: 1 / 1;
+        background: #f9f9f9;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .product-img-wrapper img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .product-card-content {
+        padding: 1.5rem;
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+    }
+
+    .product-card .brand {
+        font-size: .75rem;
+        color: var(--clr-accent);
+        text-transform: uppercase;
+        letter-spacing: .08em;
+        font-weight: 500;
+        margin-bottom: .25rem;
+    }
+
+    .product-card .name {
+        font-size: 1.2rem;
+        font-weight: 600;
+        margin-bottom: .5rem;
+    }
+
+    .product-card .price {
+        margin-top: auto;
+        font-size: 1.3rem;
+        font-weight: 700;
+        margin-bottom: 1.25rem;
+    }
+
+    .btn-catalog-redirect {
+        width: 100%;
+        padding: 0.8rem;
+        background: var(--clr-primary);
+        color: #FFFFFF;
+        text-align: center;
+        font-weight: 600;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+
+    /* USP Section */
+    .usp-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 2rem;
+        margin-top: 4rem;
+    }
+
+    .usp-card {
+        padding: 3rem 2rem;
+        border: 1px solid var(--clr-border);
+        text-align: center;
+    }
+
+    .usp-card svg {
+        width: 40px;
+        height: 40px;
+        margin-bottom: 1.5rem;
+        stroke: var(--clr-primary);
+        stroke-width: 1.5;
+        fill: none;
+    }
+
+    .usp-card h3 {
+        font-size: 1.1rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        margin-bottom: 1rem;
+    }
+
+    .usp-card p {
+        font-size: 0.95rem;
+        color: var(--clr-text-muted);
+        line-height: 1.6;
+    }
+
+    .promo-badge {
+        display: inline-block;
+        background: var(--clr-primary);
+        color: #FFFFFF;
+        padding: 0.2rem 0.6rem;
+        font-size: 0.75rem;
+        font-weight: 700;
+        margin-top: 0.5rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Banner -->
+<section class="hero">
+    <h1 class="hero-title">Sillage</h1>
+    <p class="hero-subtitle">
+        Ексклюзивна нішева парфумерія у форматі розпиву. Знайдіть свій ідеальний аромат серед найкращих парфумерних домів світу.
+    </p>
+    <a href="{% url 'products:list' %}" class="hero-btn">Відкрити каталог</a>
+</section>
+
+<!-- New Arrivals -->
+{% if new_arrivals %}
+<section class="section">
+    <div class="section-header">
+        <h2 class="section-title">Новинки</h2>
+        <a href="{% url 'products:list' %}" class="section-link">Показати все</a>
+    </div>
+    <div class="product-grid">
+        {% for product in new_arrivals %}
+        <article class="product-card">
+            <a href="{{ product.get_absolute_url }}" class="product-img-wrapper">
+                {% if product.image %}
+                    <img src="{{ product.image.url }}" alt="{{ product.name }}">
+                {% else %}
+                    <div style="color: var(--clr-text-muted); font-size: 0.7rem; text-transform: uppercase;">Немає фото</div>
+                {% endif %}
+            </a>
+            <div class="product-card-content">
+                <span class="brand">{{ product.brand }}</span>
+                <h2 class="name">{{ product.name }}</h2>
+                <p class="price">{{ product.price }} грн</p>
+                <a href="{{ product.get_absolute_url }}" class="btn-catalog-redirect">Детальніше</a>
+            </div>
+        </article>
+        {% endfor %}
+    </div>
+</section>
+{% endif %}
+
+<!-- Bestsellers -->
+{% if bestsellers %}
+<section class="section">
+    <div class="section-header">
+        <h2 class="section-title">Бестселери</h2>
+        <a href="{% url 'products:list' %}" class="section-link">Показати все</a>
+    </div>
+    <div class="product-grid">
+        {% for product in bestsellers %}
+        <article class="product-card">
+            <a href="{{ product.get_absolute_url }}" class="product-img-wrapper">
+                {% if product.image %}
+                    <img src="{{ product.image.url }}" alt="{{ product.name }}">
+                {% else %}
+                    <div style="color: var(--clr-text-muted); font-size: 0.7rem; text-transform: uppercase;">Немає фото</div>
+                {% endif %}
+            </a>
+            <div class="product-card-content">
+                <span class="brand">{{ product.brand }}</span>
+                <h2 class="name">{{ product.name }}</h2>
+                <p class="price">{{ product.price }} грн</p>
+                <a href="{{ product.get_absolute_url }}" class="btn-catalog-redirect">Детальніше</a>
+            </div>
+        </article>
+        {% endfor %}
+    </div>
+</section>
+{% endif %}
+
+<!-- USP Section -->
+<section class="usp-grid">
+    <div class="usp-card">
+        <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        <h3>Тільки оригінали</h3>
+        <p>Ми гарантуємо 100% автентичність кожного деканту. Жодних копій чи підробок.</p>
+    </div>
+    <div class="usp-card">
+        <svg viewBox="0 0 24 24"><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg>
+        <h3>Безкоштовна доставка</h3>
+        <p>При замовленні від 2000 грн ми беремо витрати на доставку на себе.</p>
+    </div>
+    <div class="usp-card">
+        <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+        <h3>Акція 1+1 = 3</h3>
+        <p>Купуйте два аромати та отримуйте третій у подарунок! Пропозиція діє до 12 червня.</p>
+        <div class="promo-badge">Limited Time</div>
+    </div>
+</section>
+{% endblock %}

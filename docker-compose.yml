@@ -1,0 +1,28 @@
+version: "3.9"
+
+services:
+  web:
+    build: .
+    container_name: sillage-web
+    ports:
+      - "8000:8000"
+    environment:
+      - DJANGO_SETTINGS_MODULE=core.settings
+      - DEBUG=1
+      - ALLOWED_HOSTS=*
+    volumes:
+      - sqlite-data:/app/db
+    command: >
+      sh -c "
+        python manage.py migrate --noinput &&
+        gunicorn core.wsgi:application --bind 0.0.0.0:8000 --workers 2 --timeout 120
+      "
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+
+volumes:
+  sqlite-data:

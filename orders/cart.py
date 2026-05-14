@@ -74,6 +74,7 @@ class Cart:
         Видаляє кошик із поточних даних сесії.
         """
         del self.session[settings.CART_SESSION_ID]
+        self.cart = {}
         self.save()
 
     def get_total_price(self) -> Decimal:

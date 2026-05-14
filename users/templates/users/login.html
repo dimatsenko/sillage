@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Вхід — Sillage{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/auth.css' %}">
+<style>
+    .auth-container { max-width: 450px; margin-top: 4rem; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+    <h2 class="auth-title">Вхід до системи</h2>
+    <form method="POST" class="auth-form">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="auth-btn">Увійти</button>
+    </form>
+    <div class="auth-links">
+        Немає акаунту? <a href="{% url 'users:register' %}">Зареєструватися</a>
+    </div>
+</div>
+{% endblock %}

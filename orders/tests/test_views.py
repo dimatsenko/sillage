@@ -24,7 +24,7 @@ class TestCartViews:
         url = reverse('orders:cart_add', args=[product.id])
         data = {'quantity': quantity, 'override': override}
         
-        response = active_client.post(url, data=data)
+        response = active_client.post(url, data=data, HTTP_REFERER=reverse('orders:cart_detail'))
         
         assert response.status_code == 302
         assert response.url == reverse('orders:cart_detail')

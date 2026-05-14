@@ -5,6 +5,7 @@ Defines Order and OrderItem entities for managing customer purchases
 in the Sillage perfume decant store.
 """
 
+from django.conf import settings
 from django.db import models
 from products.models import Product
 
@@ -13,11 +14,20 @@ class Order(models.Model):
     Stores general information about a customer's order.
 
     Fields:
+        user — optional link to the authenticated user (allows guest checkout).
         first_name, last_name, email — customer contact details.
         address, city — shipping information.
         paid — status flag to track payment.
     """
 
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='orders',
+        verbose_name='Користувач',
+    )
     first_name = models.CharField(max_length=50, verbose_name='Ім\'я')
     last_name = models.CharField(max_length=50, verbose_name='Прізвище')
     email = models.EmailField(verbose_name='Email')
@@ -35,6 +45,9 @@ class Order(models.Model):
     def __str__(self):
         return f'Замовлення {self.id}'
 
+    def get_total_cost(self):
+        return sum(item.get_cost() for item in self.items.all())
+
 
 class OrderItem(models.Model):
     """
@@ -51,3 +64,6 @@ class OrderItem(models.Model):
 
     def __str__(self):
         return str(self.id)
+
+    def get_cost(self):
+        return self.price * self.quantity
