@@ -28,7 +28,6 @@
         border-radius: var(--radius);
     }
 
-<<<<<<< Updated upstream
     .catalog-search:focus-within {
         border-color: var(--clr-primary);
     }
@@ -155,7 +154,7 @@
         outline: none;
         transition: border-color var(--transition);
     }
-=======
+
     .filter-group {
         margin-bottom: 2rem;
         border-bottom: 1px solid var(--clr-border);
@@ -167,7 +166,6 @@
         border-bottom: none;
         padding-bottom: 0;
     }
->>>>>>> Stashed changes
 
     .filter-title {
         font-size: 0.95rem;
@@ -315,7 +313,7 @@
         background: var(--clr-surface);
         border: 1px solid var(--clr-border);
         border-radius: var(--radius);
-        padding: 1.5rem;
+        padding: 1rem;
         transition: transform var(--transition), box-shadow var(--transition);
         display: flex;
         flex-direction: column;
@@ -324,6 +322,31 @@
     .product-card:hover {
         transform: translateY(-4px);
         box-shadow: var(--shadow-hover);
+    }
+
+    .product-img-wrapper {
+        width: 100%;
+        aspect-ratio: 1 / 1;
+        background: var(--clr-bg);
+        border-radius: calc(var(--radius) - 4px);
+        overflow: hidden;
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .product-img-wrapper img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .product-img-placeholder {
+        color: var(--clr-text-muted);
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
     }
 
     .product-card .brand {
@@ -500,6 +523,13 @@
             <div class="product-grid">
                 {% for product in products %}
                 <article class="product-card" id="product-card-{{ product.pk }}">
+                    <a href="{{ product.get_absolute_url }}" class="product-img-wrapper">
+                        {% if product.image %}
+                            <img src="{{ product.image.url }}" alt="{{ product.name }}">
+                        {% else %}
+                            <div class="product-img-placeholder">Фото відсутнє</div>
+                        {% endif %}
+                    </a>
                     <span class="brand">{{ product.brand }}</span>
                     <h2 class="name">
                         <a href="{{ product.get_absolute_url }}">{{ product.name }}</a>
