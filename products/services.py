@@ -2,12 +2,14 @@
 Business-logic services for the Products module.
 
 Encapsulates filtering and search logic, keeping views thin.
-All querysets returned use select_related for FK optimisation.
+Follows SOLID principles:
+- SRP: Each function has one clear responsibility.
+- OCP: filter_products is extensible via keyword arguments.
 """
 from decimal import Decimal, InvalidOperation
-from typing import Optional
+from typing import Any, Optional
 
-from django.db.models import Q, QuerySet
+from django.db.models import Max, Min, Q, QuerySet
 
 from .models import Product
 
@@ -15,74 +17,46 @@ from .models import Product
 def get_base_queryset() -> QuerySet[Product]:
     """
     Return the base Product queryset with related Category pre-loaded.
-
-    Every public query should originate from this function to guarantee
-    consistent select_related usage and avoid N+1 problems.
     """
     return Product.objects.select_related('category')
 
 
 def filter_products(
     queryset: Optional[QuerySet[Product]] = None,
-    *,
-    category_slug: Optional[str] = None,
-    brand: Optional[str] = None,
-    brands: Optional[list[str]] = None,
-    min_price: Optional[str] = None,
-    max_price: Optional[str] = None,
-    volume: Optional[str] = None,
-    gender: Optional[str] = None,
-    fragrance_group: Optional[str] = None,
+    **filters: Any
 ) -> QuerySet[Product]:
     """
     Apply catalogue filters to a Product queryset.
 
-    Args:
-        queryset:      Starting queryset (defaults to ``get_base_queryset``).
-        category_slug: Exact match on ``category.slug``.
-        brand:         Case-insensitive containment match on ``brand``.
-        min_price:     Minimum price (inclusive).
-        max_price:     Maximum price (inclusive).
-        volume:        Exact match on ``volume`` (ml).
-
-    Returns:
-        Filtered queryset.  Invalid numeric values are silently ignored
-        to prevent 400 errors from user-supplied query strings.
+    Accepts arbitrary filters to remain open for extension without
+    modifying the core logic for every new field.
     """
     if queryset is None:
         queryset = get_base_queryset()
 
+    # Category filter
+    category_slug = filters.get('category_slug')
     if category_slug:
         queryset = queryset.filter(category__slug=category_slug)
 
+    # Brand filters (supports multiple and single)
+    brands = filters.get('brands')
+    brand = filters.get('brand')
     if brands:
         queryset = queryset.filter(brand__in=brands)
     elif brand:
         queryset = queryset.filter(brand__icontains=brand)
 
-    if gender:
-        queryset = queryset.filter(gender=gender)
+    # Simple exact matches
+    for field in ['gender', 'fragrance_group']:
+        val = filters.get(field)
+        if val:
+            queryset = queryset.filter(**{field: val})
 
-    if fragrance_group:
-        queryset = queryset.filter(fragrance_group=fragrance_group)
-
-    if min_price:
-        try:
-            queryset = queryset.filter(price__gte=Decimal(min_price))
-        except (InvalidOperation, ValueError):
-            pass  # ignore invalid input
-
-    if max_price:
-        try:
-            queryset = queryset.filter(price__lte=Decimal(max_price))
-        except (InvalidOperation, ValueError):
-            pass  # ignore invalid input
-
-    if volume is not None:
-        try:
-            queryset = queryset.filter(volume=int(volume))
-        except (ValueError, TypeError):
-            pass  # ignore invalid input
+    # Numeric range filters
+    queryset = _apply_numeric_filter(queryset, 'price__gte', filters.get('min_price'), Decimal)
+    queryset = _apply_numeric_filter(queryset, 'price__lte', filters.get('max_price'), Decimal)
+    queryset = _apply_numeric_filter(queryset, 'volume', filters.get('volume'), int)
 
     return queryset
 
@@ -90,20 +64,10 @@ def filter_products(
 def search_products(
     query: str,
     queryset: Optional[QuerySet[Product]] = None,
+    limit: Optional[int] = None
 ) -> QuerySet[Product]:
     """
     Full-text search across product name and brand.
-
-    Uses case-insensitive containment (``icontains``) which is portable
-    across SQLite and PostgreSQL without extra extensions.
-
-    Args:
-        query:    Search string entered by the user.
-        queryset: Starting queryset (defaults to ``get_base_queryset``).
-
-    Returns:
-        Filtered queryset matching the search term.
-        Returns an empty queryset if the search string is blank.
     """
     if queryset is None:
         queryset = get_base_queryset()
@@ -112,6 +76,35 @@ def search_products(
     if not cleaned:
         return queryset.none()
 
-    return queryset.filter(
+    qs = queryset.filter(
         Q(name__icontains=cleaned) | Q(brand__icontains=cleaned)
     )
+    
+    if limit:
+        qs = qs[:limit]
+        
+    return qs
+
+
+def get_catalog_stats() -> dict[str, Any]:
+    """
+    Aggregate statistics for the catalog filters (e.g. price range).
+    """
+    stats = Product.objects.aggregate(
+        min_p=Min('price'), 
+        max_p=Max('price')
+    )
+    return {
+        'min_price': int(stats['min_p'] or 0),
+        'max_price': int(stats['max_p'] or 0),
+    }
+
+
+def _apply_numeric_filter(queryset: QuerySet, field_lookup: str, value: Any, type_factory: type) -> QuerySet:
+    """Helper to apply numeric filters safely."""
+    if value:
+        try:
+            return queryset.filter(**{field_lookup: type_factory(value)})
+        except (InvalidOperation, ValueError, TypeError):
+            pass
+    return queryset
