@@ -49,7 +49,7 @@ class ProductAdmin(admin.ModelAdmin):
             'fields': ('name', 'brand', 'category'),
         }),
         ('Характеристики', {
-            'fields': ('price', 'volume', 'description'),
+            'fields': ('price', 'volume', 'description', 'image'),
         }),
         ('Службова інформація', {
             'fields': ('created_at', 'updated_at'),
