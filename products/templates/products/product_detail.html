@@ -250,7 +250,7 @@
                 <dd>{{ product.get_gender_display }}</dd>
 
                 <dt>Група</dt>
-                <dd>{{ product.get_fragrance_group_display }}</dd>
+                <dd>{{ product.fragrance_group|default:"-" }}</dd>
 
                 <dt>Об'єм</dt>
                 <dd>{{ product.volume }}&nbsp;мл</dd>
