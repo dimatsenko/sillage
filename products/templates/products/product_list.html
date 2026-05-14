@@ -647,18 +647,23 @@
             </div>
 
             <!-- Pagination -->
+            <!-- Pagination -->
             {% if is_paginated %}
             <nav class="pagination" aria-label="Навігація сторінками">
-                {% if page_obj.has_previous %}
-                <a href="?page=1{% for k, v in current_filters.items %}{% if v %}&{{ k }}={{ v }}{% endif %}{% endfor %}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}">&laquo;</a>
-                <a href="?page={{ page_obj.previous_page_number }}{% for k, v in current_filters.items %}{% if v %}&{{ k }}={{ v }}{% endif %}{% endfor %}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}">&lsaquo;</a>
+                {% if page_obj.paginator.num_pages > 5 and page_obj.has_previous %}
+                    <a href="?page={{ page_obj.previous_page_number }}{% for k, v in request.GET.items %}{% if k != 'page' %}&{{ k }}={{ v }}{% endif %}{% endfor %}">&lsaquo;</a>
                 {% endif %}
 
-                <span class="current">{{ page_obj.number }}</span>
+                {% for num in page_obj.paginator.page_range %}
+                    {% if page_obj.number == num %}
+                        <span class="current">{{ num }}</span>
+                    {% else %}
+                        <a href="?page={{ num }}{% for k, v in request.GET.items %}{% if k != 'page' %}&{{ k }}={{ v }}{% endif %}{% endfor %}">{{ num }}</a>
+                    {% endif %}
+                {% endfor %}
 
-                {% if page_obj.has_next %}
-                <a href="?page={{ page_obj.next_page_number }}{% for k, v in current_filters.items %}{% if v %}&{{ k }}={{ v }}{% endif %}{% endfor %}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}">&rsaquo;</a>
-                <a href="?page={{ page_obj.paginator.num_pages }}{% for k, v in current_filters.items %}{% if v %}&{{ k }}={{ v }}{% endif %}{% endfor %}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}">&raquo;</a>
+                {% if page_obj.paginator.num_pages > 5 and page_obj.has_next %}
+                    <a href="?page={{ page_obj.next_page_number }}{% for k, v in request.GET.items %}{% if k != 'page' %}&{{ k }}={{ v }}{% endif %}{% endfor %}">&rsaquo;</a>
                 {% endif %}
             </nav>
             {% endif %}
