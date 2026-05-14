@@ -20,21 +20,21 @@
         }
 
         :root {
-            --clr-bg: #F3F0E7;
-            --clr-surface: #FDFCF8;
-            --clr-surface-hover: #F7F5EE;
-            --clr-border: #E8E4D7;
-            --clr-primary: #2A2529;
-            --clr-primary-dim: #4A4145;
-            --clr-accent: #6B5E62;
-            --clr-text: #2A2529;
-            --clr-text-muted: #7A7074;
-            --clr-danger: #C0392B;
-            --radius: 8px;
-            --shadow: 0 2px 12px rgba(42, 37, 41, .08);
-            --shadow-hover: 0 8px 24px rgba(42, 37, 41, .12);
+            --clr-bg: #FFFFFF;
+            --clr-surface: #FFFFFF;
+            --clr-surface-hover: #F9F9F9;
+            --clr-border: #E0E0E0;
+            --clr-primary: #1A1A1A;
+            --clr-primary-dim: #333333;
+            --clr-accent: #666666;
+            --clr-text: #1A1A1A;
+            --clr-text-muted: #888888;
+            --clr-danger: #000000;
+            --radius: 0; /* Minimalist sharp corners */
+            --shadow: none;
+            --shadow-hover: none;
             --font: 'Inter', system-ui, -apple-system, sans-serif;
-            --transition: .22s ease;
+            --transition: .15s ease;
         }
 
         body {
@@ -50,11 +50,6 @@
         a {
             color: var(--clr-primary);
             text-decoration: none;
-            transition: color var(--transition);
-        }
-
-        a:hover {
-            color: var(--clr-accent);
         }
 
         .site-header {
@@ -86,11 +81,7 @@
         .site-header nav a {
             font-size: .9rem;
             font-weight: 500;
-            color: rgba(243, 240, 231, .7);
-        }
-
-        .site-header nav a:hover {
-            color: var(--clr-bg);
+            color: rgba(255, 255, 255, .7);
         }
 
         .container {
@@ -112,12 +103,12 @@
         }
 
         .site-footer {
-            background: var(--clr-primary);
-            color: rgba(243, 240, 231, .6);
+            background: #FFFFFF;
+            color: var(--clr-primary);
             text-align: center;
-            padding: 2rem 1rem;
+            padding: 3rem 1rem;
             font-size: .85rem;
-            border-top: none;
+            border-top: 1px solid var(--clr-border);
             margin-top: auto;
         }
 
@@ -187,11 +178,6 @@
             display: flex;
             align-items: center;
             gap: 1rem;
-            transition: background var(--transition);
-        }
-
-        .search-result-item:hover {
-            background: var(--clr-surface-hover);
         }
 
         .search-result-item img {
